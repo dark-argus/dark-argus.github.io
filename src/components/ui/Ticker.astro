@@ -1,0 +1,139 @@
+---
+/**
+ * Full-width ticker strip (lime band, eye separators). Pure CSS animation: two identical groups
+ * slide by -50% for a seamless loop. A CSS-only pause toggle (checkbox +
+ * :has) satisfies WCAG 2.2.2; reduced-motion stops it entirely.
+ */
+import EyeIcon from '../eye/EyeIcon.astro';
+import { SITE } from '~site';
+
+interface Props {
+  items?: readonly string[];
+  label?: string;
+}
+const { items = SITE.ticker, label = 'Topics covered' } = Astro.props;
+const id = `tick-${crypto.randomUUID().slice(0, 6)}`;
+// Repeat so one group is always wider than the widest screens.
+const run = [...items, ...items];
+---
+
+<div class="ticker">
+  <input type="checkbox" id={id} class="ticker-toggle visually-hidden" />
+  <label for={id} class="ticker-pause" title="Pause / play ticker">
+    <span class="visually-hidden">Pause ticker animation</span>
+    <svg class="icon-pause" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1h3v10H2zM7 1h3v10H7z"></path></svg><svg class="icon-play" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"></path></svg>
+  </label>
+  <div class="viewport">
+    <div class="track">
+      {
+        [0, 1].map((copy) => (
+          <ul class="group" role="list" aria-label={copy === 0 ? label : undefined} aria-hidden={copy === 1 ? 'true' : undefined}>
+            {run.map((item) => (
+              <li>
+                <span>{item}</span>
+                <EyeIcon class="sep" size="1.1em" />
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .ticker {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    background: var(--ticker-bg);
+    color: var(--ticker-ink);
+    border-bottom: var(--border);
+    overflow: hidden;
+  }
+  .viewport {
+    flex: 1;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+  }
+  .track {
+    display: flex;
+    width: max-content;
+    animation: tick var(--ticker-duration) linear infinite;
+  }
+  .group {
+    display: flex;
+    flex: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    padding: 0.9rem 0 0.9rem 1.75rem;
+    font-family: var(--ff-display);
+    font-size: clamp(1.1rem, 0.9rem + 0.6vw, 1.5rem);
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .sep {
+    color: var(--ticker-ink);
+  }
+  @keyframes tick {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  .ticker:has(.ticker-toggle:checked) .track,
+  .ticker:hover .track {
+    animation-play-state: paused;
+  }
+
+  .ticker-pause {
+    order: 2;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    flex: none;
+    border-left: var(--bw) solid var(--c-ink);
+    background: var(--ticker-bg);
+    color: var(--ticker-ink);
+    font-size: 0.8rem;
+    cursor: pointer;
+    z-index: 1;
+  }
+  .ticker-pause:hover {
+    background: var(--c-ink);
+    color: var(--c-lime);
+  }
+  .ticker-toggle:focus-visible + .ticker-pause {
+    outline: var(--focus-width) solid var(--c-ink);
+    outline-offset: -7px;
+  }
+  .icon-play,
+  .ticker-toggle:checked + .ticker-pause .icon-pause {
+    display: none;
+  }
+  .ticker-toggle:checked + .ticker-pause .icon-play {
+    display: block;
+  }
+  .ticker-pause svg {
+    width: 0.8rem;
+    height: 0.8rem;
+    fill: currentColor;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .track {
+      animation: none;
+    }
+    /* nothing moves → no pause control (hide the checkbox too) */
+    .ticker-pause,
+    .ticker-toggle {
+      display: none;
+    }
+  }
+</style>

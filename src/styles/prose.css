@@ -1,0 +1,322 @@
+/* ==========================================================================
+   The reading surface. Deliberately calm: flat background, ~70ch measure,
+   18px body, 1.75 line height, no rotation, no animation. Only headings
+   borrow the display face; everything else is plain, legible DM Sans.
+   ========================================================================== */
+
+.prose {
+  max-width: var(--measure);
+  font-size: var(--fs-md);
+  line-height: var(--lh-prose);
+  color: var(--prose-ink);
+  font-feature-settings: 'kern', 'liga';
+  overflow-wrap: break-word;
+}
+.prose > * + * {
+  margin-top: 1.5rem;
+}
+
+/* ---- headings ---- */
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5 {
+  position: relative;
+  color: var(--ink);
+  scroll-margin-top: 6rem;
+}
+.prose h2 {
+  margin-top: 3.25rem;
+  font-family: var(--ff-display);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 1.5rem + 1.2vw, 2.375rem);
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.prose h3 {
+  margin-top: 2.5rem;
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.prose h4 {
+  margin-top: 2rem;
+  font-family: var(--ff-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.prose h5 {
+  margin-top: 1.75rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.prose h2 + *,
+.prose h3 + *,
+.prose h4 + * {
+  margin-top: 1rem;
+}
+/* "#" permalink: empty link, glyph drawn here so it never pollutes the TOC */
+.prose .heading-anchor {
+  margin-left: 0.4em;
+  font-family: var(--ff-mono);
+  font-size: 0.7em;
+  font-weight: 700;
+  color: var(--accent-text);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity var(--dur-fast);
+}
+.prose .heading-anchor::before {
+  content: '#';
+}
+.prose :is(h2, h3, h4):hover .heading-anchor,
+.prose .heading-anchor:focus-visible {
+  opacity: 1;
+}
+@media (hover: none) {
+  .prose .heading-anchor {
+    opacity: 0.5;
+  }
+}
+
+/* ---- inline ---- */
+.prose a {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-color: var(--link-deco);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+.prose a:hover {
+  text-decoration-thickness: 3px;
+}
+.prose strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+.prose code,
+.prose kbd,
+.prose samp {
+  /* No ligatures in code: "!=" must not render as "≠" in a security writeup. */
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0;
+}
+.prose :not(pre) > code {
+  padding: 0.1em 0.35em;
+  border: var(--bw-thin) solid color-mix(in srgb, var(--line) 35%, transparent);
+  background: var(--panel);
+  font-family: var(--ff-mono);
+  font-size: 0.86em;
+  border-radius: 3px;
+}
+.prose mark {
+  background: var(--c-lime);
+  color: var(--c-ink);
+  padding-inline: 0.15em;
+}
+.prose kbd {
+  padding: 0.05em 0.4em;
+  border: var(--bw-thin) solid var(--line);
+  border-bottom-width: 3px;
+  border-radius: 4px;
+  font-family: var(--ff-mono);
+  font-size: 0.82em;
+}
+
+/* ---- lists ---- */
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+.prose li + li {
+  margin-top: 0.45rem;
+}
+.prose li > ul,
+.prose li > ol {
+  margin-top: 0.45rem;
+}
+.prose ul > li::marker {
+  color: var(--accent-text);
+  content: '■  ';
+  font-size: 0.7em;
+}
+.prose ol > li::marker {
+  font-family: var(--ff-mono);
+  font-weight: 700;
+  color: var(--accent-text);
+}
+.prose li:has(> input[type='checkbox']) {
+  list-style: none;
+  margin-left: -1.4em;
+}
+
+/* ---- plain blockquote (callouts are separate) ---- */
+.prose blockquote {
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 4px solid var(--c-lime);
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+/* ---- callouts: > [!NOTE] etc. ---- */
+.prose .callout {
+  --callout: var(--c-cyan);
+  position: relative;
+  margin-top: 2.25rem;
+  padding: 1.4rem 1.4rem 1.2rem;
+  background: var(--panel);
+  border: var(--bw) solid var(--callout);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.prose .callout + :not(h2, h3, h4) {
+  margin-top: 1.75rem;
+}
+.prose .callout--tip {
+  --callout: var(--c-lime);
+}
+.prose .callout--warning,
+.prose .callout--caution {
+  --callout: var(--c-orange);
+}
+.prose .callout--important {
+  --callout: var(--c-violet);
+}
+[data-theme='paper'] .prose .callout {
+  /* lime/cyan borders are too faint on paper: ink frame + colored shadow */
+  border-color: var(--c-ink);
+  box-shadow: 5px 5px 0 var(--callout);
+}
+.prose .callout-label {
+  position: absolute;
+  top: -0.95rem;
+  left: 1.1rem;
+  margin: 0;
+  padding: 0.15rem 0.75rem;
+  background: var(--callout);
+  color: var(--c-ink);
+  font-family: var(--ff-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+.prose .callout--important .callout-label {
+  background: var(--c-bone);
+  outline: var(--bw) solid var(--c-violet);
+}
+.prose .callout-body > * + * {
+  margin-top: 0.75rem;
+}
+
+/* ---- figures / screenshots ---- */
+.prose figure {
+  margin-block: 2rem;
+}
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border: var(--border);
+  background: var(--panel);
+}
+.prose img.zoomable {
+  cursor: zoom-in;
+}
+.prose .figure figcaption {
+  margin-top: 0.6rem;
+  font-family: var(--ff-mono);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+/* ---- tables ---- */
+.prose .table-wrap {
+  overflow-x: auto;
+  border: var(--border);
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.prose th,
+.prose td {
+  padding: 0.65rem 0.9rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: var(--bw-thin) solid color-mix(in srgb, var(--line) 25%, transparent);
+}
+.prose th {
+  background: var(--panel);
+  font-family: var(--ff-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: var(--border);
+}
+.prose tr:last-child td {
+  border-bottom: 0;
+}
+
+.prose hr {
+  margin-block: 3rem;
+  border: 0;
+  border-top: var(--border-dashed);
+}
+
+/* ---- footnotes (GFM) ---- */
+.prose .footnotes {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: var(--border-dashed);
+  font-size: 0.9rem;
+}
+
+/* ---- zoom dialog (scripts/zoom.ts) ---- */
+.zoom-dialog {
+  max-width: 96vw;
+  max-height: 94dvh;
+  padding: 0;
+  border: var(--bw) solid var(--c-bone);
+  background: var(--c-void);
+  color: var(--c-bone);
+  box-shadow: 8px 8px 0 var(--c-lime);
+  cursor: zoom-out;
+}
+.zoom-dialog::backdrop {
+  background: rgb(5 5 8 / 0.88);
+}
+.zoom-dialog img {
+  display: block;
+  max-width: 96vw;
+  max-height: calc(94dvh - 5rem);
+  width: auto;
+  height: auto;
+}
+.zoom-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  padding: 0.3rem 0.7rem;
+  border: var(--bw-thin) solid var(--c-ink);
+  background: var(--c-lime);
+  color: var(--c-ink);
+  font-family: var(--ff-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.zoom-cap {
+  padding: 0.75rem 1rem;
+  font-family: var(--ff-mono);
+  font-size: 0.8125rem;
+  color: var(--c-bone-muted);
+  border-top: var(--bw-thin) solid var(--c-bone);
+}

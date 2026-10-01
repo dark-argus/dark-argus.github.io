@@ -1,0 +1,173 @@
+/* ==========================================================================
+   Global base: reset, typography defaults, focus, motion, layout helpers.
+   Component vocabulary (buttons, chips, cards…) lives in brutal.css;
+   the article reading surface lives in prose.css.
+   ========================================================================== */
+
+@import './tokens.css';
+@import './brutal.css';
+
+/* ---- reset ------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 5.5rem; /* anchor targets clear the sticky nav */
+}
+body {
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--ff-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip; /* tilted stickers must never cause horizontal scroll */
+}
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+img {
+  height: auto;
+}
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+}
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+h1,
+h2,
+h3,
+h4 {
+  line-height: var(--lh-snug);
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+  padding: 0;
+}
+hr {
+  border: 0;
+  border-top: var(--border);
+}
+
+/* ---- links ------------------------------------------------------------ */
+a {
+  color: inherit;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+a:hover {
+  text-decoration-color: var(--link-deco);
+}
+
+::selection {
+  background: var(--c-lime);
+  color: var(--c-ink);
+}
+
+/* ---- focus: thick, high-contrast, on-brand ---------------------------- */
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+/* buttons / chips already have a border — ring sits outside it */
+.btn:focus-visible,
+.chip:focus-visible,
+.card:focus-within:has(:focus-visible) {
+  outline-offset: 4px;
+}
+
+/* ---- layout helpers --------------------------------------------------- */
+.container {
+  width: min(100% - 2 * var(--gutter), var(--container));
+  margin-inline: auto;
+}
+.section {
+  padding-block: var(--section-y);
+  background: var(--bg);
+  color: var(--ink);
+  border-top: var(--border);
+}
+.section--alt {
+  background: var(--bg-alt);
+}
+.stack > * + * {
+  margin-top: var(--flow, var(--space-4));
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: -100px;
+  z-index: calc(var(--z-dialog) + 1);
+  padding: var(--space-2) var(--space-4);
+  background: var(--c-lime);
+  color: var(--c-ink);
+  border: var(--bw) solid var(--c-ink);
+  font-family: var(--ff-mono);
+  font-weight: 700;
+}
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+/* ---- reduced motion: kill ALL of it ---------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

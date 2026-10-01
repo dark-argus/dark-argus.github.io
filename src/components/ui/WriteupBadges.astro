@@ -1,0 +1,23 @@
+---
+/** Platform / category / difficulty chips for a writeup. */
+import type { Writeup } from '@/lib/posts';
+import { DIFFICULTY_ACCENT, CATEGORY_ACCENT } from '@/lib/taxonomy';
+
+interface Props {
+  data: Writeup['data'];
+  size?: 'sm' | 'md';
+}
+const { data, size = 'md' } = Astro.props;
+const sm = size === 'sm';
+---
+
+<span class="chip chip--ink" class:list={[{ 'chip--sm': sm }]}>{data.platform}</span>
+<span
+  class:list={['chip chip--dot', `acc-${DIFFICULTY_ACCENT[data.difficulty]}`, { 'chip--sm': sm }]}
+  title="Difficulty"
+>
+  {data.difficulty}
+</span>
+<span class:list={['chip chip--outline', `acc-${CATEGORY_ACCENT[data.category]}`, { 'chip--sm': sm }]} title="Category">
+  {data.category}
+</span>

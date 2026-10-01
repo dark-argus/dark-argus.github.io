@@ -1,0 +1,34 @@
+---
+/**
+ * Theme toggle. Shown only when html.js is set (by /theme-init.js, before
+ * first paint — so no layout shift). Without JS it can't work, so it stays
+ * hidden and the OS preference applies.
+ */
+---
+
+<button type="button" class="icon-btn theme-toggle acc-lime" data-theme-toggle aria-pressed="false">
+  <span class="visually-hidden">Light theme</span>
+  <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4 7 7 0 0 0 20 14.5Z"></path>
+  </svg>
+  <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path>
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    display: none;
+  }
+  :global(html.js) .theme-toggle {
+    display: grid;
+  }
+  .i-sun,
+  :global([data-theme='paper']) .i-moon {
+    display: none;
+  }
+  :global([data-theme='paper']) .i-sun {
+    display: block;
+  }
+</style>

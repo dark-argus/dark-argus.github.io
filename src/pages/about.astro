@@ -1,0 +1,433 @@
+---
+/** /about — "whoami": the full story, what I do, contact and disclosure. */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import EyeSticker from '@/components/eye/EyeSticker.astro';
+import EyeIcon from '@/components/eye/EyeIcon.astro';
+import { SITE } from '~site';
+import { withBase, isExternal } from '@/lib/url';
+import '@/styles/prose.css';
+
+// Age from birthday, computed at build time.
+const born = new Date(SITE.about.born);
+const today = new Date();
+let age = today.getFullYear() - born.getFullYear();
+const mDiff = today.getMonth() - born.getMonth();
+if (mDiff < 0 || (mDiff === 0 && today.getDate() < born.getDate())) age -= 1;
+---
+
+<BaseLayout
+  title="whoami"
+  description={`About ${SITE.author.name} — offensive security researcher. The story, what I work on, and how to reach me.`}
+>
+  <PageHeader eyebrow="// whoami" title="whoami" script="the one behind the eye." />
+
+  <!-- INTRO -->
+  <section class="section section--alt intro-sec" aria-labelledby="who-title">
+    <div class="container intro">
+      <div class="copy">
+        <h2 id="who-title" class="section-title small">{SITE.author.name}</h2>
+        <div class="prose">
+          <p>
+            The name's {SITE.author.name} — {age}, college student by day, offensive security nerd by night.
+          </p>
+          <p>
+            I'm an offensive security researcher based in {SITE.author.location}. Web exploitation, Active Directory
+            attack chains, vulnerability research, CTF — the whole offensive playbook. Self-taught, which is a polite way
+            of saying I learned most of this by doing things I probably shouldn't have, on systems I probably shouldn't
+            have touched, at ages I definitely shouldn't have been doing any of this.
+          </p>
+          <p>I've since corrected my moral compass. Mostly.</p>
+          <p>
+            These days I break things with permission, document everything obsessively, and run a home lab that my
+            electricity bill deeply resents. No degree. No certification gatekeeping. Just six years of obsession, a lot
+            of broken machines, and the stubborn belief that if you understand something deeply enough — you can break
+            anything.
+          </p>
+        </div>
+      </div>
+
+      <div class="side">
+        <pre class="card term acc-violet" aria-label="whoami terminal"><code><span class="p">$ whoami</span>
+{SITE.author.handle}
+<span class="p">$ cat location</span>
+{SITE.author.location}
+<span class="p">$ cat now</span>
+{SITE.about.now}</code></pre>
+        <EyeSticker class="sticker tilt-4 eye" size="9rem" />
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT STARTED -->
+  <section class="section" aria-labelledby="start-title">
+    <div class="container narrow">
+      <header class="section-head">
+        <p class="eyebrow">// 01 Origin</p>
+        <h2 id="start-title" class="section-title">How it started</h2>
+      </header>
+      <div class="prose">
+        <p>
+          I was nine years old when I watched Elliot Alderson sit alone in a dark room and quietly dismantle the
+          financial system of the world. No guns. No explosions. Just a keyboard, a hoodie, and the knowledge of how
+          things actually work under the surface.
+        </p>
+        <p>That was it for me.</p>
+        <p>
+          I didn't understand half of what he was doing — but I understood the power. The idea that knowledge of systems
+          gives you leverage over systems. That's never left me.
+        </p>
+        <p>
+          I started where every kid starts — Lucky Patcher, cracked mobile games, free coins in whatever app was popular
+          that week. Technically hacking. Ethically questionable. Completely formative.
+        </p>
+        <p>
+          For a few years after that it was scattered — small experiments, curiosity without direction, learning the
+          vocabulary of something I didn't yet fully understand. The kind of phase everyone goes through but nobody
+          writes about.
+        </p>
+        <p>
+          Mid-2020 is when things got serious. Real labs. Real techniques. Real consequences if I got it wrong. Six years
+          of that, compounding.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY ARGUS -->
+  <section class="section section--alt" aria-labelledby="why-title">
+    <div class="container why">
+      <div class="why-copy">
+        <header class="section-head">
+          <p class="eyebrow">// 02 The name</p>
+          <h2 id="why-title" class="section-title">Why Argus?</h2>
+        </header>
+        <div class="prose">
+          <p>
+            In Greek mythology, Argus Panoptes was a giant covered in a hundred eyes. He never fully slept — while some
+            eyes rested, others stayed open. Always watching. Always aware. Nothing escaped him.
+          </p>
+          <p>That's enumeration. That's the philosophy behind everything I do in security.</p>
+          <p>
+            Before you exploit anything, you see everything. You map the surface. You find what others miss. Most people
+            rush to the attack — the ones who win are the ones who looked harder during recon.
+          </p>
+          <p class="closing">A hundred eyes on every system.</p>
+        </div>
+      </div>
+      <div class="why-eye" aria-hidden="true">
+        <EyeSticker class="sticker tilt-1" size="min(13rem, 55vw)" fill="var(--c-lime)" />
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT I DO -->
+  <section class="section" aria-labelledby="do-title">
+    <div class="container">
+      <header class="section-head">
+        <p class="eyebrow">// 03 Work</p>
+        <h2 id="do-title" class="section-title">What I do</h2>
+      </header>
+
+      <div class="do-grid">
+        <article class="card do-card acc-cyan">
+          <h3>Offensive security</h3>
+          <p>
+            Web exploitation, Active Directory attack chains, network pentesting and vulnerability research on personal
+            hardware. I write mock pentest reports following real methodology — not just "I found RCE", but why it exists
+            and how to fix it.
+          </p>
+        </article>
+        <article class="card do-card acc-orange">
+          <h3>CTF &amp; labs</h3>
+          <p>
+            HackTheBox and TryHackMe — currently gravitating toward Hard/Insane boxes and full AD environments. Running
+            GOAD (Game of Active Directory) and other vulnerable AD environments on Proxmox at home for realistic attack
+            practice.
+          </p>
+        </article>
+      </div>
+
+      <div class="tools">
+        <h3 class="tools-title"><EyeIcon size="1.2em" /> Tools I actually use</h3>
+        <ul class="tool-list" role="list">
+          {SITE.about.tools.map((t) => <li class="chip">{t}</li>)}
+        </ul>
+      </div>
+
+      <div class="note-box now-box">
+        <span class="label">Currently learning</span>
+        <p>{SITE.about.now}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section section--alt" id="contact" aria-labelledby="contact-title">
+    <div class="container">
+      <header class="section-head">
+        <p class="eyebrow">// 04 Find me</p>
+        <h2 id="contact-title" class="section-title">Get in touch</h2>
+      </header>
+      <ul class="contacts" role="list">
+        <li class="card acc-lime">
+          <span class="k">Email</span>
+          <a href={`mailto:${SITE.author.email}`}>{SITE.author.email}</a>
+        </li>
+        {
+          SITE.socials.map((s, i) => (
+            <li class={`card acc-${['cyan', 'orange', 'violet', 'lime'][i % 4]}`}>
+              <span class="k">{s.label}</span>
+              <a href={s.href} rel={isExternal(s.href) ? 'me noopener noreferrer' : undefined}>
+                {s.handle ?? s.href}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- DISCLOSURE -->
+  <section class="section invert" id="disclosure" aria-labelledby="disc-title">
+    <div class="container narrow disc">
+      <header class="section-head">
+        <p class="eyebrow">// Responsible disclosure</p>
+        <h2 id="disc-title" class="section-title">How I disclose</h2>
+      </header>
+      <ol class="policy" role="list">
+        <li>
+          <span class="num-circle acc-lime" aria-hidden="true">1</span>
+          <div>
+            <h3>Vendor first</h3>
+            <p>Findings are reported privately to the vendor or maintainer before anything is published.</p>
+          </div>
+        </li>
+        <li>
+          <span class="num-circle acc-cyan" aria-hidden="true">2</span>
+          <div>
+            <h3>{SITE.disclosure.embargoDays}-day window</h3>
+            <p>
+              I publish after a fix ships or after {SITE.disclosure.embargoDays} days, whichever comes first. Extensions
+              are fine when a vendor is actively working on it.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="num-circle acc-orange" aria-hidden="true">3</span>
+          <div>
+            <h3>Authorized targets only</h3>
+            <p>Research happens in labs, CTFs and programs where I have permission. No third-party data ends up in posts.</p>
+          </div>
+        </li>
+      </ol>
+      <div class="note-box">
+        <span class="label">Found a bug in this site?</span>
+        <p>
+          Report it to <a href={SITE.disclosure.contact}>{SITE.disclosure.contact.replace(/^mailto:/, '')}</a>.
+          Machine-readable details live in <a href={withBase('/.well-known/security.txt')}>/.well-known/security.txt</a>.
+        </p>
+      </div>
+      <p class="motto">See everything. Miss nothing.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .intro-sec {
+    border-top: 0;
+  }
+  .intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 1rem + 4vw, 4.5rem);
+    align-items: start;
+  }
+  .copy {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .small {
+    font-size: clamp(2.25rem, 1.4rem + 3vw, 3.5rem);
+  }
+  .side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .term {
+    align-self: stretch;
+    margin: 0;
+    padding: 1.2rem 1.35rem;
+    background: var(--term-bg);
+    color: var(--c-bone);
+    font-family: var(--ff-mono);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    rotate: -1.5deg;
+  }
+  .term .p {
+    color: var(--c-lime);
+  }
+  /* eye tucks under the terminal's bottom-right corner, clear of the text */
+  .side :global(.eye) {
+    margin-top: -2.75rem;
+    margin-right: -0.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .narrow {
+    max-width: 52rem;
+  }
+  .closing {
+    font-family: var(--ff-script);
+    font-size: 1.9rem;
+    color: var(--accent-text);
+    line-height: 1.1;
+  }
+
+  /* why argus */
+  .why {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: clamp(2rem, 1rem + 3vw, 3.5rem);
+    align-items: center;
+  }
+  .why-eye {
+    display: grid;
+    place-items: center;
+  }
+
+  /* what i do */
+  .do-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .do-card {
+    padding: 1.5rem 1.65rem;
+  }
+  .do-card h3 {
+    font-family: var(--ff-display);
+    font-weight: 400;
+    font-size: 1.75rem;
+    text-transform: uppercase;
+    line-height: 1.05;
+    margin-bottom: 0.75rem;
+  }
+  .do-card p {
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .tools {
+    margin-bottom: 2.5rem;
+  }
+  .tools-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--ff-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+    margin-bottom: 1rem;
+  }
+  .tool-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0;
+  }
+  .now-box p {
+    font-size: var(--fs-md);
+  }
+
+  /* contact */
+  .contacts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: 1.75rem;
+    margin: 0;
+  }
+  .contacts li {
+    display: grid;
+    gap: 0.4rem;
+    padding: 1.25rem 1.35rem;
+    overflow-wrap: anywhere;
+  }
+  .k {
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .contacts a {
+    font-family: var(--ff-mono);
+    font-weight: 700;
+    text-decoration-color: var(--link-deco);
+  }
+
+  /* disclosure */
+  .disc .eyebrow {
+    color: var(--ink);
+  }
+  .policy {
+    display: grid;
+    gap: 1.5rem;
+    margin: 0 0 2.5rem;
+  }
+  .policy li {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+  }
+  .policy :global(.num-circle) {
+    flex: none;
+    width: 3.5rem;
+    font-size: 1.6rem;
+  }
+  .policy h3 {
+    font-family: var(--ff-display);
+    font-weight: 400;
+    font-size: 1.625rem;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+  .policy p {
+    margin-top: 0.3rem;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .note-box a {
+    font-weight: 700;
+    text-decoration-color: var(--c-violet);
+  }
+  .motto {
+    margin-top: 2rem;
+    font-family: var(--ff-display);
+    font-size: clamp(1.5rem, 1rem + 2vw, 2.25rem);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 56rem) {
+    .intro,
+    .why {
+      grid-template-columns: 1fr;
+    }
+    .side {
+      max-width: 26rem;
+    }
+    .why-eye {
+      justify-items: start;
+    }
+  }
+</style>

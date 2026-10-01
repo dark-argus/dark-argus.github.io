@@ -1,0 +1,568 @@
+/* ==========================================================================
+   Neo-brutalist component vocabulary (matches the dark-argus design canvas).
+   Everything here only consumes tokens — change looks in tokens.css.
+
+   Accent helpers: add .acc-lime / .acc-violet / .acc-orange / .acc-cyan /
+   .acc-bone to any card, button, chip or numeral to set its --acc color
+   (hard shadow, dot, outline, numeral fill).
+   ========================================================================== */
+
+/* ---- type roles ------------------------------------------------------- */
+.display,
+.section-title {
+  font-family: var(--ff-display);
+  font-weight: 400; /* Anton ships a single weight */
+  text-transform: uppercase;
+  line-height: var(--lh-tight);
+  letter-spacing: 0;
+}
+.section-title {
+  font-size: var(--fs-3xl);
+}
+/* "// 01 Start here" */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--ff-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+}
+.eyebrow--muted {
+  color: var(--ink-muted);
+}
+.script {
+  display: inline-block;
+  font-family: var(--ff-script);
+  font-weight: 600;
+  text-transform: none;
+  color: var(--mark-ink);
+  background: var(--mark-bg);
+  padding-inline: 0.15em;
+  rotate: -3deg;
+  transform-origin: left center;
+  line-height: 1;
+}
+.mono {
+  font-family: var(--ff-mono);
+}
+.muted {
+  color: var(--ink-muted);
+}
+.soft {
+  color: var(--ink-soft);
+}
+.lede {
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  max-width: 34rem;
+}
+/* mono uppercase arrow link: "SEE RESEARCH →" */
+.arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: var(--ff-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  text-decoration: none;
+}
+.arrow-link:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--link-deco);
+}
+/* Arrows are drawn with an SVG mask: the subsetted fonts don't ship U+2192. */
+.arrow-link::after,
+.i-arrow::after,
+.arrow-link--back::before,
+.i-arrow--back::before {
+  content: '';
+  display: inline-block;
+  width: 1.05em;
+  height: 0.8em;
+  flex: none;
+  background: currentColor;
+  mask: var(--arrow-mask) center / contain no-repeat;
+  transition: translate var(--dur) var(--ease-spring);
+}
+:root {
+  --arrow-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 14'%3E%3Cpath d='M1 7h16M11 1.5 17.5 7 11 12.5' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='square'/%3E%3C/svg%3E");
+}
+.arrow-link:hover::after {
+  translate: 3px 0;
+}
+.arrow-link--back::after {
+  content: none;
+}
+.arrow-link--back::before,
+.i-arrow--back::before {
+  rotate: 180deg;
+}
+.i-arrow--back::after {
+  content: none;
+}
+.arrow-link--back:hover::before {
+  translate: -3px 0;
+}
+.i-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+}
+
+/* ---- buttons: translate INTO their shadow on hover / press ------------ */
+.btn {
+  --btn-bg: var(--panel);
+  --btn-ink: var(--ink);
+  --off: var(--shadow-offset);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 3.25rem;
+  padding: 0.95rem 1.75rem;
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  font-family: var(--ff-mono);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1.1;
+  box-shadow: var(--off) var(--off) 0 var(--acc, var(--shadow-color));
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.btn:hover,
+.btn:active {
+  transform: translate(var(--off), var(--off));
+  box-shadow: 0 0 0 var(--acc, var(--shadow-color));
+}
+.btn--primary {
+  --btn-bg: var(--c-lime);
+  --btn-ink: var(--c-ink);
+}
+.btn--ghost {
+  --btn-bg: transparent;
+}
+.btn--dark {
+  --btn-bg: var(--c-ink);
+  --btn-ink: var(--c-lime);
+  border-color: var(--c-ink);
+}
+.btn--sm {
+  --off: 4px;
+  min-height: 2.75rem;
+  padding: 0.55rem 1.35rem;
+  font-size: 0.8125rem;
+}
+.btn--pill {
+  border-radius: var(--radius-pill);
+}
+
+/* round icon button (search, theme toggle) */
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  padding: 0;
+  border: var(--border);
+  border-radius: 50%;
+  background: var(--panel);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.icon-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--acc, var(--shadow-color));
+}
+.icon-btn:active {
+  transform: none;
+  box-shadow: none;
+}
+.icon-btn svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- chips / pills ---------------------------------------------------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.28em 0.85em;
+  border: var(--border);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--ff-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1.35;
+  white-space: nowrap;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.chip--sm {
+  border-width: var(--bw-thin);
+  font-size: 0.6875rem;
+  padding: 0.2em 0.7em;
+}
+/* solid lime ("RESEARCH", "FEATURED") */
+.chip--solid {
+  background: var(--c-lime);
+  color: var(--c-ink);
+}
+/* dark ("CVE-…", platform on colored cards) */
+.chip--ink {
+  background: var(--c-ink);
+  color: var(--c-bone);
+}
+/* colored outline tag ("#web") — colored TEXT only where it passes (void) */
+.chip--tag {
+  border-color: var(--acc, var(--line));
+  color: var(--acc, var(--ink));
+  text-transform: none;
+  letter-spacing: 0.06em;
+}
+[data-theme='paper'] .chip--tag,
+.invert .chip--tag {
+  color: var(--ink);
+}
+/* colored border, ink text, stays uppercase (category) */
+.chip--outline {
+  border-color: var(--acc, var(--line));
+}
+.on-color .chip--outline {
+  border-color: var(--c-ink);
+}
+/* filled tag cloud chip (always ink text on an accent fill) */
+.chip--fill {
+  background: var(--acc, var(--c-bone));
+  color: var(--c-ink);
+  border-color: var(--c-ink);
+  text-transform: none;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  padding: 0.35em 0.95em;
+}
+/* "bone" accent = the theme's line color, which is ink on paper → keep fills light */
+.chip--fill.acc-bone {
+  background: var(--c-bone);
+}
+[data-theme='paper'] .chip--fill.acc-bone {
+  background: #fff;
+}
+/* status dot variant */
+.chip--dot::before {
+  content: '';
+  flex: none;
+  width: 0.65em;
+  height: 0.65em;
+  border-radius: 50%;
+  background: var(--acc, var(--c-lime));
+  outline: var(--bw-thin) solid var(--line);
+}
+/* chips on a colored card: ink borders/text/dot outlines */
+.on-color {
+  --line: var(--c-ink);
+}
+.on-color .chip {
+  border-color: var(--c-ink);
+  color: var(--c-ink);
+}
+.on-color .chip--ink {
+  color: var(--c-bone);
+}
+a.chip:hover,
+label.chip:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--acc, var(--shadow-color));
+}
+
+/* accent helpers */
+.acc-lime {
+  --acc: var(--c-lime);
+}
+.acc-violet {
+  --acc: var(--c-violet);
+}
+.acc-orange {
+  --acc: var(--c-orange);
+}
+.acc-cyan {
+  --acc: var(--c-cyan);
+}
+.acc-bone {
+  --acc: var(--shadow-color);
+}
+
+/* ---- cards ------------------------------------------------------------ */
+.card {
+  --off: calc(var(--shadow-offset) + 2px);
+  position: relative;
+  background: var(--panel);
+  color: var(--ink);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--off) var(--off) 0 var(--acc, var(--shadow-color));
+}
+/* colored card fills — text is always ink (AA on lime/orange/cyan) */
+.fill-lime,
+.fill-orange,
+.fill-cyan,
+.fill-bone {
+  color: var(--c-ink);
+}
+.fill-lime {
+  background: var(--c-lime);
+}
+.fill-orange {
+  background: var(--c-orange);
+}
+.fill-cyan {
+  background: var(--c-cyan);
+}
+.fill-bone {
+  background: var(--c-bone);
+}
+/* violet: white text is ~4.3:1 → only large display text sits directly on it */
+.fill-violet {
+  background: var(--c-violet);
+  color: #fff;
+}
+[data-theme='paper'] .fill-bone {
+  background: #fff;
+}
+
+/* Whole-card links: the title link stretches over the card. */
+.card .stretched {
+  text-decoration: none;
+  color: inherit;
+}
+.card .stretched::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.card:has(.stretched:hover) .stretched {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.12em;
+}
+.card .stretched:focus-visible {
+  outline: none;
+}
+.card:has(.stretched:focus-visible) {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: 5px;
+}
+/* anything that must stay clickable above the stretched link */
+.card .raise {
+  position: relative;
+  z-index: 2;
+}
+
+/* ---- stickers: small rotation, straighten on hover -------------------- */
+.sticker {
+  --tilt: 0deg;
+  rotate: calc(var(--tilt) * var(--tilt-scale));
+  transition:
+    rotate var(--dur) var(--ease-spring),
+    translate var(--dur) var(--ease-out);
+}
+.sticker:hover,
+.sticker:focus-within {
+  rotate: 0deg;
+}
+.tilt-1 {
+  --tilt: var(--tilt-1);
+}
+.tilt-2 {
+  --tilt: var(--tilt-2);
+}
+.tilt-3 {
+  --tilt: var(--tilt-3);
+}
+.tilt-4 {
+  --tilt: var(--tilt-4);
+}
+.tilt-5 {
+  --tilt: var(--tilt-5);
+}
+.tilt-6 {
+  --tilt: var(--tilt-6);
+}
+.tilt-7 {
+  --tilt: var(--tilt-7);
+}
+.tilt-8 {
+  --tilt: var(--tilt-8);
+}
+
+/* ---- dashed note box -------------------------------------------------- */
+.note-box {
+  display: flex;
+  gap: var(--space-4) var(--space-5);
+  align-items: baseline;
+  flex-wrap: wrap;
+  padding: var(--space-5) var(--space-6);
+  border: var(--bw) dashed var(--line);
+  border-radius: var(--radius);
+}
+.note-box .label {
+  flex: none;
+  font-family: var(--ff-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+}
+.note-box p {
+  font-size: var(--fs-md);
+  line-height: 1.5;
+}
+
+/* ---- oversized numerals (01 / 02 / 03) --------------------------------
+   void: accent fill (all pass on #0E0E13).
+   paper: lime/cyan/orange fail on cream, so the numeral turns ink and the
+   accent becomes a hard offset shadow instead. */
+.numeral {
+  font-family: var(--ff-display);
+  font-size: var(--fs-numeral);
+  line-height: 1;
+  color: var(--acc, var(--accent));
+}
+[data-theme='paper'] .numeral,
+.invert .numeral {
+  color: var(--ink);
+  text-shadow: 0.06em 0.06em 0 var(--acc, var(--accent));
+}
+[data-theme='paper'] .invert .numeral {
+  color: var(--acc, var(--accent));
+  text-shadow: none;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .numeral {
+    color: var(--ink);
+    text-shadow: 0.06em 0.06em 0 var(--acc, var(--accent));
+  }
+}
+
+/* ---- numbered circles (How I work) ----------------------------------- */
+.num-circle {
+  display: grid;
+  place-items: center;
+  width: 5.5rem;
+  aspect-ratio: 1;
+  border: var(--border);
+  border-radius: 50%;
+  background: var(--acc, var(--c-lime));
+  color: var(--c-ink);
+  font-family: var(--ff-display);
+  font-size: 2.5rem;
+  line-height: 1;
+  box-shadow: 5px 5px 0 var(--shadow-color);
+}
+.num-circle.acc-violet {
+  color: #fff; /* 40px display text: large-text AA */
+}
+
+/* ---- square icon tile (Disclosure tiles) ------------------------------ */
+.icon-tile {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  border: var(--bw) solid var(--c-ink);
+  background: var(--acc, var(--c-lime));
+  color: var(--c-ink);
+}
+.icon-tile.acc-violet {
+  color: #fff;
+}
+.icon-tile svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- eye bullets for lists ------------------------------------------- */
+.eye-list {
+  list-style: none;
+  padding: 0;
+}
+.eye-list > li {
+  position: relative;
+  padding-left: 1.9em;
+}
+.eye-list > li + li {
+  margin-top: var(--space-2);
+}
+.eye-list > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.4em;
+  width: 1.3em;
+  height: 0.85em;
+  background: var(--accent-text);
+  /* almond eye with pupil hole, as a mask so it inherits color */
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 17'%3E%3Cpath fill-rule='evenodd' d='M13 0C7 0 2.4 3.9 0 8.5 2.4 13.1 7 17 13 17s10.6-3.9 13-8.5C23.6 3.9 19 0 13 0Zm0 3.2a5.3 5.3 0 1 1 0 10.6 5.3 5.3 0 0 1 0-10.6Zm0 3a2.3 2.3 0 1 0 0 4.6 2.3 2.3 0 0 0 0-4.6Z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+/* ---- form inputs ------------------------------------------------------ */
+.input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.6rem 1rem;
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+  color: var(--ink);
+  font-family: var(--ff-mono);
+}
+.input::placeholder {
+  color: var(--ink-muted);
+}
+
+/* ---- section heading block ------------------------------------------- */
+.section-head {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: clamp(2rem, 1rem + 3vw, 2.75rem);
+}

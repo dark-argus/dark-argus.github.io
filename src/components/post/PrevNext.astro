@@ -1,0 +1,89 @@
+---
+import { withBase } from '@/lib/url';
+import { postPath, type AnyPost } from '@/lib/posts';
+
+interface Props {
+  prev?: AnyPost;
+  next?: AnyPost;
+}
+const { prev, next } = Astro.props;
+---
+
+{
+  (prev || next) && (
+    <nav class="prevnext" aria-label="More posts">
+      <div class="container grid">
+        {prev ? (
+          <a class="pn acc-bone" href={withBase(postPath(prev))} rel="prev">
+            <span class="dir i-arrow i-arrow--back">Previous</span>
+            <span class="t">{prev.data.title}</span>
+          </a>
+        ) : (
+          <span />
+        )}
+        {next && (
+          <a class="pn next acc-bone" href={withBase(postPath(next))} rel="next">
+            <span class="dir i-arrow">Next</span>
+            <span class="t">{next.data.title}</span>
+          </a>
+        )}
+      </div>
+    </nav>
+  )
+}
+
+<style>
+  .prevnext {
+    padding-block: 3.5rem;
+    background: var(--bg-alt);
+    border-top: var(--border);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+  }
+  .pn {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.4rem 1.6rem;
+    background: var(--bg);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    transition:
+      transform var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out);
+  }
+  .pn:hover {
+    transform: translate(var(--shadow-offset), var(--shadow-offset));
+    box-shadow: 0 0 0 var(--shadow-color);
+  }
+  .next {
+    text-align: right;
+    align-items: flex-end;
+  }
+  .dir {
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+  }
+  .t {
+    font-family: var(--ff-display);
+    font-size: clamp(1.4rem, 1.1rem + 0.8vw, 1.75rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  @media (max-width: 40rem) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .grid > span:empty {
+      display: none;
+    }
+  }
+</style>

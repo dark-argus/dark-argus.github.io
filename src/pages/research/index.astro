@@ -1,0 +1,39 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Listing from '@/components/listing/Listing.astro';
+import { getResearch, tagCounts } from '@/lib/posts';
+
+const posts = await getResearch();
+const facets = [
+  {
+    name: 'tags',
+    label: 'Tag',
+    options: tagCounts(posts).map(({ tag, count }) => ({ value: tag, label: `#${tag}`, count })),
+  },
+];
+---
+
+<BaseLayout
+  title="Research"
+  description="Original security research: root-cause analysis, proofs of concept and disclosure timelines."
+>
+  <PageHeader
+    eyebrow="// Research"
+    title="Research"
+    count={posts.length}
+    script="slow, deep, cited."
+    lede="Original findings, root-cause analysis and disclosure timelines. Newest first."
+  />
+  <section class="section section--alt listing-section" aria-label="Research posts">
+    <div class="container">
+      <Listing posts={posts} facets={facets} noun="research posts" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .listing-section {
+    border-top: 0;
+  }
+</style>

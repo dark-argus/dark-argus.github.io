@@ -1,0 +1,103 @@
+---
+/** Card used in the research / writeups / tag grids. The title link covers the card. */
+import CveBadge from '../ui/CveBadge.astro';
+import TagChip from '../ui/TagChip.astro';
+import WriteupBadges from '../ui/WriteupBadges.astro';
+import { withBase } from '@/lib/url';
+import { CATEGORY_ACCENT } from '@/lib/taxonomy';
+import { formatDate, isoDate, isResearch, postPath, readingMinutes, type AnyPost } from '@/lib/posts';
+
+interface Props {
+  post: AnyPost;
+  index?: number;
+  headingLevel?: 'h2' | 'h3';
+}
+const { post, index = 0, headingLevel: H = 'h2' } = Astro.props;
+const research = isResearch(post);
+const tilt = `tilt-${[5, 6, 7, 8][index % 4]}`;
+const accent = research ? ['lime', 'cyan', 'orange', 'violet'][index % 4] : CATEGORY_ACCENT[post.data.category];
+
+// data-* attributes drive the CSS-only filters (see FilterBar).
+const filterData = research
+  ? { 'data-tags': post.data.tags.join(' ') }
+  : {
+      'data-tags': post.data.tags.join(' '),
+      'data-platform': post.data.platform.toLowerCase().replace(/\s+/g, '-'),
+      'data-category': post.data.category,
+      'data-difficulty': post.data.difficulty,
+    };
+---
+
+<article class:list={['card sticker post-card', tilt, `acc-${accent}`]} {...filterData}>
+  <div class="chips">
+    {
+      research ? (
+        <>
+          <span class="chip chip--solid chip--sm">Research</span>
+          {post.data.cve?.map((id) => <CveBadge id={id} size="sm" class="raise" />)}
+        </>
+      ) : (
+        <WriteupBadges data={post.data} size="sm" />
+      )
+    }
+  </div>
+
+  <H class="title">
+    <a class="stretched" href={withBase(postPath(post))}>{post.data.title}</a>
+  </H>
+  <p class="summary">{post.data.summary}</p>
+
+  <footer class="foot">
+    <p class="meta">
+      <time datetime={isoDate(post.data.date)}>{formatDate(post.data.date)}</time>
+      <span aria-hidden="true">·</span>
+      {readingMinutes(post)} min read
+    </p>
+    <div class="tags raise">
+      {post.data.tags.slice(0, 3).map((t) => <TagChip tag={t} size="sm" />)}
+    </div>
+  </footer>
+</article>
+
+<style>
+  .post-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 1.4rem 1.5rem 1.3rem;
+  }
+  .chips,
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .title {
+    font-family: var(--ff-display);
+    font-weight: 400;
+    font-size: clamp(1.6rem, 1.3rem + 0.8vw, 1.95rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  .summary {
+    color: var(--ink-soft);
+    font-size: 0.975rem;
+    line-height: 1.55;
+  }
+  .foot {
+    display: grid;
+    gap: 0.7rem;
+    margin-top: auto;
+    padding-top: 0.9rem;
+    border-top: var(--bw-thin) dashed color-mix(in srgb, var(--line) 45%, transparent);
+  }
+  .meta {
+    display: flex;
+    gap: 0.5em;
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+</style>

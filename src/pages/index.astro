@@ -1,0 +1,25 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/home/Hero.astro';
+import Ticker from '@/components/ui/Ticker.astro';
+import StartHere from '@/components/home/StartHere.astro';
+import Vault from '@/components/home/Vault.astro';
+import HowIWork from '@/components/home/HowIWork.astro';
+import Ethics from '@/components/home/Ethics.astro';
+import Faq from '@/components/home/Faq.astro';
+import { getResearch, getWriteups, tagCounts } from '@/lib/posts';
+
+const research = await getResearch();
+const writeups = await getWriteups();
+const allTags = tagCounts([...research, ...writeups]);
+---
+
+<BaseLayout>
+  <Hero research={research[0]} writeup={writeups[0]} />
+  <Ticker />
+  <StartHere />
+  <Vault featured={research[0]} latestWriteup={writeups[0]} writeups={writeups} allTags={allTags} />
+  <HowIWork />
+  <Ethics />
+  <Faq />
+</BaseLayout>

@@ -1,0 +1,87 @@
+---
+/**
+ * Filterable card grid. Wraps FilterBar + grid + a CSS-counter result line.
+ * The .results element comes AFTER the grid in the DOM (so the counter has
+ * seen every visible card) and is moved above it visually with `order`.
+ */
+import FilterBar, { type Facet } from './FilterBar.astro';
+import PostCard from './PostCard.astro';
+import type { AnyPost } from '@/lib/posts';
+
+interface Props {
+  posts: AnyPost[];
+  facets?: Facet[];
+  noun?: string;
+  /** Shown when there are genuinely no posts in the collection yet. */
+  emptyMessage?: string;
+}
+const { posts, facets = [], noun = 'posts', emptyMessage } = Astro.props;
+---
+
+{
+  posts.length === 0 ? (
+    <div class="empty">
+      <p class="eyebrow">// nothing here yet</p>
+      <p class="empty-line">{emptyMessage ?? `No ${noun} published yet. The watcher is still gathering intel — check back soon.`}</p>
+    </div>
+  ) : (
+    <div class="listing">
+      <FilterBar facets={facets} />
+      <div class="grid">
+        {posts.map((post, i) => <PostCard post={post} index={i} />)}
+      </div>
+      <p class="results" aria-hidden="true"><span class="n"></span> {noun} shown</p>
+      <p class="empty-hint muted mono">Nothing else here? Use <strong>Reset filters</strong> to see everything.</p>
+    </div>
+  )
+}
+
+<style>
+  .listing {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    counter-reset: shown;
+  }
+  .results {
+    order: -1;
+    margin-top: 0.25rem;
+    font-family: var(--ff-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .results .n::before {
+    content: counter(shown);
+    color: var(--ink);
+  }
+  /* FilterBar renders first; keep it above the result line */
+  .listing > :global(.filters) {
+    order: -2;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 21rem), 1fr));
+    gap: 2.25rem 2rem;
+    align-items: stretch;
+  }
+  .grid > :global(.post-card) {
+    counter-increment: shown; /* display:none cards don't count */
+  }
+  .empty-hint {
+    font-size: 0.8125rem;
+  }
+  .empty {
+    display: grid;
+    gap: 1rem;
+    padding: 2.5rem 0;
+  }
+  .empty-line {
+    max-width: 40ch;
+    font-size: var(--fs-md);
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+</style>

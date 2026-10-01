@@ -1,0 +1,255 @@
+---
+/**
+ * Hero: stacked headline + script accent + CTAs on the left; a cluster of
+ * tilted "stickers" on the right (latest research, latest writeup, a
+ * terminal bubble and the tracking eye).
+ */
+import EyeIcon from '../eye/EyeIcon.astro';
+import EyeSticker from '../eye/EyeSticker.astro';
+import CveBadge from '../ui/CveBadge.astro';
+import WriteupBadges from '../ui/WriteupBadges.astro';
+import { SITE } from '~site';
+import { withBase } from '@/lib/url';
+import { formatDate, isoDate, postPath, type Research, type Writeup } from '@/lib/posts';
+
+interface Props {
+  research?: Research;
+  writeup?: Writeup;
+}
+const { research, writeup } = Astro.props;
+
+// CTAs adapt to what actually exists, so the primary button never leads to an
+// empty section. Research first when present, otherwise lead with writeups.
+const primary = research
+  ? { href: '/research/', label: 'Read the research' }
+  : { href: '/writeups/', label: 'Read the writeups' };
+const secondary = research
+  ? { href: '/writeups/', label: 'Browse writeups' }
+  : { href: '/about/', label: 'About the watcher' };
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container hero-inner">
+    <div class="copy">
+      <p class="eyebrow"><EyeIcon size="1.65em" /> {SITE.heroEyebrow}</p>
+      <h1 id="hero-title" class="display headline">
+        {SITE.heroLines.map((line) => <span>{line}</span>)}
+      </h1>
+      <p class="script accent-phrase">{SITE.accentPhrase}</p>
+      <p class="lede">{SITE.tagline}</p>
+      <div class="ctas">
+        <a class="btn btn--primary" href={withBase(primary.href)}>{primary.label}</a>
+        <a class="btn btn--ghost acc-violet" href={withBase(secondary.href)}>{secondary.label}</a>
+      </div>
+    </div>
+
+    <div class="stickers">
+      {
+        research && (
+          <article class="card sticker tilt-1 acc-lime s-research">
+            <div class="chips">
+              <span class="chip chip--solid chip--sm">Research</span>
+              {research.data.cve?.slice(0, 1).map((id) => <CveBadge id={id} size="sm" class="raise" />)}
+            </div>
+            <h2 class="card-title">
+              <a class="stretched" href={withBase(postPath(research))}>{research.data.title}</a>
+            </h2>
+            <p class="meta">
+              Latest research · <time datetime={isoDate(research.data.date)}>{formatDate(research.data.date)}</time>
+            </p>
+          </article>
+        )
+      }
+      {
+        writeup && (
+          <article class="card sticker tilt-2 fill-orange acc-cyan s-writeup">
+            <div class="chips on-color">
+              <WriteupBadges data={writeup.data} size="sm" />
+            </div>
+            <h2 class="card-title">
+              <a class="stretched" href={withBase(postPath(writeup))}>{writeup.data.title}</a>
+            </h2>
+            <p class="meta">
+              Latest writeup · <time datetime={isoDate(writeup.data.date)}>{formatDate(writeup.data.date)}</time>
+            </p>
+          </article>
+        )
+      }
+      <pre class="card sticker tilt-3 acc-violet s-term" aria-label="Terminal"><code><span class="p">$ whoami</span>
+{SITE.author.handle}
+<span class="p">$ echo $EYES</span>
+100</code></pre>
+      <EyeSticker class="sticker tilt-4 s-eye" title="The Argus eye, watching your cursor" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    background: var(--bg);
+    border-bottom: var(--border);
+    padding-block: clamp(3rem, 1rem + 6vw, 5.5rem);
+    overflow: clip;
+  }
+  .hero-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-6);
+  }
+  .copy {
+    display: grid;
+    gap: 1.4rem;
+    justify-items: start;
+  }
+  .headline {
+    font-size: var(--fs-hero);
+  }
+  .headline span {
+    display: block;
+  }
+  .accent-phrase {
+    font-size: clamp(2.25rem, 1.2rem + 3.2vw, 3.625rem);
+    margin-top: -0.3rem;
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.1rem 1.25rem;
+    margin-top: 0.4rem;
+  }
+
+  /* ---- sticker cluster ----
+     A grid (not absolute positioning) so long titles push the next sticker
+     down instead of hiding behind it. Small negative margins keep the
+     overlapping, scattered feel of the design. */
+  .stickers {
+    display: grid;
+    grid-template-columns: 1fr 10.6rem;
+    width: 30rem;
+    justify-self: end;
+    align-items: start;
+  }
+  .stickers > *,
+  .stickers :global(.s-eye) {
+    position: relative;
+  }
+  .s-research {
+    grid-column: 1 / -1;
+    width: 19.4rem;
+    margin-left: 1.5rem;
+    z-index: 2;
+  }
+  .s-writeup {
+    grid-column: 1 / -1;
+    justify-self: end;
+    width: 18.75rem;
+    margin-top: -0.4rem;
+    z-index: 3;
+  }
+  .s-term {
+    grid-column: 1;
+    width: 16.9rem;
+    margin-top: 0.6rem;
+    z-index: 1;
+  }
+  .stickers :global(.s-eye) {
+    grid-column: 2;
+    margin-top: 1.4rem;
+    margin-left: -2.5rem;
+    z-index: 4;
+  }
+  .stickers > :hover,
+  .stickers > :focus-within {
+    z-index: 5;
+  }
+
+  .s-research,
+  .s-writeup {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.1rem 1.25rem 1.25rem;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .card-title {
+    font-family: var(--ff-display);
+    font-weight: 400;
+    font-size: 1.75rem;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  .meta {
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-muted);
+  }
+  .s-writeup .meta {
+    color: var(--c-ink);
+    font-weight: 700;
+  }
+
+  .s-term {
+    margin: 0;
+    padding: 1rem 1.15rem;
+    background: var(--term-bg);
+    color: var(--c-bone);
+    border-color: var(--c-bone);
+    font-family: var(--ff-mono);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    white-space: pre;
+  }
+  :global([data-theme='paper']) .s-term {
+    border-color: var(--c-ink);
+  }
+  .s-term .p {
+    color: var(--c-lime);
+  }
+
+  /* ---- tablet: cards in a 2-col grid ---- */
+  @media (max-width: 64rem) {
+    .hero-inner {
+      grid-template-columns: 1fr;
+    }
+    .stickers {
+      width: auto;
+      justify-self: stretch;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem 1.5rem;
+      margin-top: var(--space-4);
+    }
+    .stickers > *,
+    .stickers :global(.s-eye) {
+      grid-column: auto;
+      width: auto;
+      margin: 0;
+      justify-self: stretch;
+    }
+    .s-term {
+      align-self: center;
+    }
+    .stickers :global(.s-eye) {
+      width: 9rem;
+      justify-self: center;
+    }
+  }
+  /* ---- phone: one clean stack ---- */
+  @media (max-width: 36rem) {
+    .stickers {
+      grid-template-columns: 1fr auto;
+    }
+    .stickers > .s-research,
+    .stickers > .s-writeup {
+      grid-column: 1 / -1;
+    }
+    .stickers :global(.s-eye) {
+      width: 7.5rem;
+    }
+  }
+</style>

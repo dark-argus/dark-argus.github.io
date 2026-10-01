@@ -1,0 +1,192 @@
+---
+import EyeSticker from './eye/EyeSticker.astro';
+import { SITE } from '~site';
+import { withBase, isExternal } from '@/lib/url';
+
+const year = new Date().getFullYear();
+const read = [
+  { href: '/research/', label: 'Research' },
+  { href: '/writeups/', label: 'Writeups' },
+  { href: '/tags/', label: 'Tags' },
+  { href: '/about/', label: 'About' },
+];
+const keys = [
+  { href: '/rss.xml', label: 'RSS' },
+  { href: '/.well-known/security.txt', label: 'security.txt' },
+  { href: '/sitemap-index.xml', label: 'Sitemap' },
+];
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="top">
+      <p class="giant" aria-hidden="true">dark-argus</p>
+
+      <div class="cols">
+        <nav aria-labelledby="f-read">
+          <h2 id="f-read">Read</h2>
+          <ul role="list">{read.map((l) => <li><a href={withBase(l.href)}>{l.label}</a></li>)}</ul>
+        </nav>
+        <nav aria-labelledby="f-follow">
+          <h2 id="f-follow">Follow</h2>
+          <ul role="list">
+            {
+              SITE.socials.map((s) => (
+                <li>
+                  <a href={s.href} rel={isExternal(s.href) ? 'me noopener noreferrer' : undefined}>
+                    {s.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <nav aria-labelledby="f-keys">
+          <h2 id="f-keys">Keys &amp; feeds</h2>
+          <ul role="list">{keys.map((l) => <li><a href={withBase(l.href)}>{l.label}</a></li>)}</ul>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <p class="legal">© {year} {SITE.author.name}. No analytics, no cookies, no trackers.</p>
+      <p class="script sign" aria-hidden="true">still watching.</p>
+
+      <!-- Easter egg: a sleeping eye. Click / Enter / hover wakes it. -->
+      <details class="egg">
+        <summary aria-label="Wake the hundred-and-first eye">
+          <EyeSticker size="4.25rem" fill="var(--c-lime)" closed />
+        </summary>
+        <p class="egg-msg" role="status">◉ you found eye #101.<br />Argus sees you, too.</p>
+      </details>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: var(--border);
+    background: var(--bg);
+    padding-block: clamp(2.5rem, 1.5rem + 3vw, 3.5rem) 2.25rem;
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-7);
+  }
+  .giant {
+    font-family: var(--ff-display);
+    font-size: clamp(3.5rem, 1rem + 11vw, 11rem);
+    line-height: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+  .cols {
+    display: flex;
+    gap: clamp(2rem, 1rem + 3vw, 3.5rem);
+    padding-top: var(--space-3);
+  }
+  .cols h2,
+  .cols a {
+    font-family: var(--ff-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .cols h2 {
+    color: var(--ink-muted);
+    margin-bottom: var(--space-3);
+  }
+  .cols ul {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+  }
+  .cols a {
+    text-decoration: none;
+  }
+  .cols a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--c-lime);
+    text-decoration-thickness: 3px;
+  }
+
+  .bottom {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+  }
+  .legal {
+    font-family: var(--ff-mono);
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+    margin-right: auto;
+  }
+  .sign {
+    font-size: 2.125rem;
+  }
+
+  /* easter egg */
+  .egg {
+    position: relative;
+    flex: none;
+  }
+  .egg summary {
+    list-style: none;
+    cursor: pointer;
+    border-radius: 50%;
+    rotate: -10deg;
+    transition: rotate var(--dur) var(--ease-spring);
+  }
+  .egg summary::-webkit-details-marker {
+    display: none;
+  }
+  .egg summary:hover,
+  .egg[open] summary {
+    rotate: 0deg;
+  }
+  .egg summary:hover :global(.lid),
+  .egg[open] :global(.lid) {
+    translate: 0 -104%;
+  }
+  .egg-msg {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 0.9rem);
+    width: max-content;
+    padding: var(--space-3) var(--space-4);
+    background: var(--c-lime);
+    color: var(--c-ink);
+    border: var(--bw) solid var(--c-ink);
+    box-shadow: 4px 4px 0 var(--shadow-color);
+    font-family: var(--ff-mono);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+  }
+
+  @media (max-width: 64rem) {
+    .top {
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+    .giant {
+      font-size: clamp(3.25rem, 0.5rem + 15vw, 10rem);
+    }
+  }
+  @media (max-width: 36rem) {
+    .cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .bottom {
+      flex-wrap: wrap;
+    }
+    .legal {
+      flex-basis: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,130 @@
+---
+/** 404 — the eye that lost sight of the page. */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import EyeSticker from '@/components/eye/EyeSticker.astro';
+import { withBase } from '@/lib/url';
+---
+
+<BaseLayout title="404 — out of sight" description="This page is out of sight." noindex>
+  <section class="lost">
+    <div class="container grid">
+      <div class="copy">
+        <p class="eyebrow">// ERR_NO_SIGHT</p>
+        <h1 class="display code-404" aria-label="Error 404">404</h1>
+        <p class="display headline">The eye lost sight of this page.</p>
+        <p class="script aside">it was right here…</p>
+        <p class="lede">
+          The link might be old, mistyped, or the post moved. A hundred eyes looked everywhere and came back empty.
+        </p>
+        <div class="ctas">
+          <a class="btn btn--primary" href={withBase('/')}>Back to base</a>
+          <a class="btn btn--ghost acc-violet" href={withBase('/search/')} data-search-open>Search instead</a>
+        </div>
+      </div>
+
+      <div class="visual" aria-hidden="true">
+        <!-- the iris wanders (CSS only; still under reduced motion) -->
+        <EyeSticker class="sticker tilt-4 searching" size="min(15rem, 60vw)" fill="var(--c-orange)" track={false} />
+        <pre class="card term acc-cyan"><code><span class="p">$ find / -name "this-page"</span>
+find: no such page
+<span class="p">$ echo $?</span>
+404</code></pre>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .lost {
+    padding-block: clamp(3rem, 1rem + 6vw, 6rem);
+    background:
+      repeating-linear-gradient(90deg, transparent 0 79px, color-mix(in srgb, var(--line) 7%, transparent) 79px 80px),
+      var(--bg);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 3rem;
+    align-items: center;
+  }
+  .copy {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+  .code-404 {
+    font-size: clamp(7rem, 4rem + 14vw, 15rem);
+    line-height: 0.8;
+    color: var(--c-lime);
+  }
+  :global([data-theme='paper']) .code-404 {
+    color: var(--ink);
+    text-shadow: 0.04em 0.04em 0 var(--c-lime);
+  }
+  .headline {
+    font-size: clamp(2rem, 1.2rem + 3vw, 3.5rem);
+    max-width: 14ch;
+  }
+  .aside {
+    font-size: clamp(2rem, 1.4rem + 1.6vw, 2.75rem);
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.1rem;
+    margin-top: 0.5rem;
+  }
+  .visual {
+    display: grid;
+    justify-items: center;
+    gap: 2rem;
+  }
+  .term {
+    margin: 0;
+    padding: 1rem 1.2rem;
+    background: var(--term-bg);
+    color: var(--c-bone);
+    font-family: var(--ff-mono);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    rotate: 2deg;
+  }
+  .term .p {
+    color: var(--c-lime);
+  }
+  /* iris darting around, looking for the page */
+  .visual :global(.searching [data-eye-iris]) {
+    animation: search-look 5s ease-in-out infinite;
+  }
+  @keyframes search-look {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    15% {
+      transform: translate(-5px, -1px);
+    }
+    30% {
+      transform: translate(5px, 1.5px);
+    }
+    45% {
+      transform: translate(4px, -2px);
+    }
+    60% {
+      transform: translate(-4px, 2px);
+    }
+    80% {
+      transform: translate(0, -2px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .visual :global(.searching [data-eye-iris]) {
+      animation: none;
+    }
+  }
+  @media (max-width: 56rem) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

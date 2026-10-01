@@ -1,0 +1,33 @@
+---
+/** "#tag" chip linking to the tag page. Color is stable per tag. */
+import { withBase } from '@/lib/url';
+import { accentFor } from '@/lib/taxonomy';
+
+interface Props {
+  tag: string;
+  variant?: 'outline' | 'fill';
+  size?: 'sm' | 'md';
+  count?: number;
+}
+const { tag, variant = 'outline', size = 'md', count } = Astro.props;
+---
+
+<a
+  class:list={[
+    'chip',
+    variant === 'fill' ? 'chip--fill' : 'chip--tag',
+    `acc-${accentFor(tag)}`,
+    { 'chip--sm': size === 'sm' },
+  ]}
+  href={withBase(`/tags/${tag}/`)}
+>
+  #{tag}{count !== undefined && <span class="count" aria-label={`${count} posts`}>{count}</span>}
+</a>
+
+<style>
+  .count {
+    font-size: 0.85em;
+    opacity: 0.75;
+    margin-left: 0.15em;
+  }
+</style>

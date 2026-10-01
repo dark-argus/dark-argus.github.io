@@ -1,0 +1,275 @@
+/* ==========================================================================
+   dark-argus · design tokens
+   --------------------------------------------------------------------------
+   THE one place to change colors, type, spacing, borders and motion.
+
+   Layers:
+     1. Raw palette      (--c-*)       — literal colors, never used directly
+                                         by components.
+     2. Theme mapping    (--bg, --ink…) — semantic roles, swapped per theme.
+     3. Scales           (--space-*, --fs-*, --shadow-*, --tilt-*…)
+
+   Themes:
+     void  (dark, default)  →  html[data-theme="void"]  or no attribute
+     paper (light)          →  html[data-theme="paper"]
+   public/theme-init.js sets the attribute before first paint from
+   localStorage or prefers-color-scheme. Without JS, the media query below
+   still picks "paper" for light-mode users.
+
+   Contrast notes (WCAG AA, checked):
+     void : bone #F1EEE6 on #0E0E13 ≈ 16.5:1 · muted ≈ 9:1 · lime ≈ 15.9:1
+            orange ≈ 6.8:1 · cyan ≈ 12:1 · ultraviolet ≈ 4.4:1 (large/non-text only)
+     paper: #111 on #F1EEE6 ≈ 16:1 · muted ≈ 8:1
+            lime/cyan/orange FAIL as text on paper → used only as fills,
+            borders and shadows, always with --on-accent (#111) text on top.
+   ========================================================================== */
+
+:root {
+  /* ---- 1. raw palette -------------------------------------------------- */
+  --c-void: #0e0e13;
+  --c-void-2: #16161d;
+  --c-void-3: #1f1f29;
+  --c-bone: #f1eee6;
+  --c-bone-2: #e7e2d5;
+  --c-bone-3: #fbf9f4;
+  --c-ink: #111111;
+  --c-bone-soft: #d9d6ce; /* secondary copy on void */
+  --c-bone-muted: #b8b5ad; /* meta / captions on void (≈9:1) */
+  --c-ink-soft: #2a2823;
+  --c-ink-muted: #4a4740;
+
+  --c-lime: #b6ff3b; /* primary accent */
+  --c-violet: #7c5cff;
+  --c-orange: #ff6a3d;
+  --c-cyan: #35e0ff;
+  --c-lime-deep: #3d6b00; /* lime-family text that passes AA on paper */
+  --c-violet-deep: #5a3ae6; /* violet text/links that pass AA on paper */
+
+  /* ---- fonts (families injected by Astro's Fonts API, see astro.config) */
+  --ff-display: var(--font-display), Impact, 'Arial Narrow', sans-serif;
+  --ff-script: var(--font-script), 'Comic Sans MS', cursive;
+  --ff-body: var(--font-body), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ff-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* ---- type scale (fluid) -------------------------------------------- */
+  --fs-xs: 0.75rem; /* eyebrows, micro labels */
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem; /* article body = 18px */
+  --fs-lg: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --fs-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2.125rem);
+  --fs-2xl: clamp(2.5rem, 1.3rem + 4.2vw, 5rem); /* post title (80px @1280) */
+  --fs-3xl: clamp(2.75rem, 1.2rem + 5vw, 5.25rem); /* section titles (84px) */
+  --fs-hero: clamp(3.5rem, 1rem + 8.4vw, 7.75rem); /* stacked hero (124px) */
+  --fs-numeral: clamp(3rem, 2rem + 3vw, 4.5rem); /* 01 / 02 / 03 (72px) */
+
+  --lh-tight: 0.94;
+  --lh-snug: 1.15;
+  --lh-body: 1.6;
+  --lh-prose: 1.75;
+  --tracking-eyebrow: 0.14em;
+  --measure: 70ch; /* article line length */
+
+  /* ---- spacing (4px base) -------------------------------------------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  --container: 76rem;
+  --section-y: clamp(3.5rem, 2rem + 6vw, 7.5rem);
+
+  /* ---- borders, radii, shadows --------------------------------------- */
+  --bw: 3px;
+  --bw-thin: 2px;
+  --border: var(--bw) solid var(--line);
+  --border-dashed: var(--bw-thin) dashed var(--line);
+  /* Square by design — only chips, the RSS CTA and circles are round. */
+  --radius-sm: 0;
+  --radius: 0;
+  --radius-lg: 0;
+  --radius-pill: 999px;
+
+  --shadow-offset: 6px;
+  --shadow-sm: 3px 3px 0 var(--shadow-color);
+  --shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--shadow-color);
+  --shadow-lg: 10px 10px 0 var(--shadow-color);
+
+  /* ---- sticker tilts (straighten on hover) --------------------------- */
+  --tilt-1: -3deg;
+  --tilt-2: 2.5deg;
+  --tilt-3: -2deg;
+  --tilt-4: 8deg; /* round eye sticker */
+  --tilt-5: -0.6deg; /* bento cards: barely tilted */
+  --tilt-6: 1deg;
+  --tilt-7: -1deg;
+  --tilt-8: 0.8deg;
+  --tilt-scale: 1; /* reduced on mobile */
+
+  /* ---- motion --------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 120ms;
+  --dur: 220ms;
+  --ticker-duration: 45s;
+
+  /* ---- misc ----------------------------------------------------------- */
+  --z-nav: 50;
+  --z-dialog: 100;
+  --focus-width: 4px;
+}
+
+/* ---- 2. theme mapping ------------------------------------------------- */
+
+/* void (dark) — default */
+:root,
+[data-theme='void'] {
+  color-scheme: dark;
+  --bg: var(--c-void);
+  --bg-alt: var(--c-void-2); /* alternating section band */
+  --panel: var(--c-void-2); /* cards, reading surface */
+  --panel-2: var(--c-void-3);
+  --ink: var(--c-bone); /* body text */
+  --ink-soft: var(--c-bone-soft);
+  --ink-muted: var(--c-bone-muted);
+  --line: var(--c-bone); /* borders */
+  --shadow-color: var(--c-bone);
+  --accent: var(--c-lime);
+  --accent-text: var(--c-lime); /* accent used AS text */
+  --link: var(--c-lime);
+  --link-deco: var(--c-lime);
+  --focus: var(--c-cyan);
+  --on-accent: var(--c-ink); /* text sitting on an accent fill */
+  --prose-ink: #e6e3db;
+  --code-bg: #08080c;
+  --term-bg: #050508;
+  --mark-bg: transparent; /* hero script phrase background */
+  --mark-ink: var(--c-lime);
+  --ticker-bg: var(--c-lime);
+  --ticker-ink: var(--c-ink);
+}
+
+/* paper (light) */
+[data-theme='paper'] {
+  color-scheme: light;
+  --bg: var(--c-bone);
+  --bg-alt: var(--c-bone-2);
+  --panel: var(--c-bone-3);
+  --panel-2: #ffffff;
+  --ink: var(--c-ink);
+  --ink-soft: var(--c-ink-soft);
+  --ink-muted: var(--c-ink-muted);
+  --line: var(--c-ink);
+  --shadow-color: var(--c-ink);
+  --accent: var(--c-lime);
+  --accent-text: var(--c-lime-deep);
+  --link: var(--c-ink);
+  --link-deco: var(--c-violet);
+  --focus: var(--c-violet-deep);
+  --on-accent: var(--c-ink);
+  --prose-ink: #1b1a17;
+  --code-bg: #111116;
+  --term-bg: #08080b;
+  --mark-bg: var(--c-lime); /* lime fails as text on paper → marker highlight */
+  --mark-ink: var(--c-ink);
+  --ticker-bg: var(--c-lime);
+  --ticker-ink: var(--c-ink);
+}
+
+/* No-JS fallback: honour the OS preference when no theme was set. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --bg: var(--c-bone);
+    --bg-alt: var(--c-bone-2);
+    --panel: var(--c-bone-3);
+    --panel-2: #ffffff;
+    --ink: var(--c-ink);
+    --ink-soft: var(--c-ink-soft);
+    --ink-muted: var(--c-ink-muted);
+    --line: var(--c-ink);
+    --shadow-color: var(--c-ink);
+    --accent-text: var(--c-lime-deep);
+    --link: var(--c-ink);
+    --link-deco: var(--c-violet);
+    --focus: var(--c-violet-deep);
+    --prose-ink: #1b1a17;
+    --mark-bg: var(--c-lime);
+    --mark-ink: var(--c-ink);
+  }
+}
+
+/* ---- inverted band ("Disclosure & ethics") -----------------------------
+   Always the opposite of the page theme: bone band on void, void band on
+   paper. Only the roles the band actually uses are remapped. */
+.invert {
+  color-scheme: light;
+  --bg: var(--c-bone);
+  --bg-alt: var(--c-bone);
+  --panel: var(--c-bone-3);
+  --panel-2: #fff;
+  --ink: var(--c-ink);
+  --ink-soft: var(--c-ink-soft);
+  --ink-muted: var(--c-ink-muted);
+  --line: var(--c-ink);
+  --shadow-color: var(--c-ink);
+  --accent-text: var(--c-lime-deep);
+  --link: var(--c-ink);
+  --link-deco: var(--c-violet);
+  --focus: var(--c-violet-deep);
+  --mark-bg: var(--c-lime);
+  --mark-ink: var(--c-ink);
+}
+[data-theme='paper'] .invert {
+  color-scheme: dark;
+  --bg: #141418;
+  --bg-alt: #141418;
+  --panel: var(--c-void-2);
+  --panel-2: var(--c-void-3);
+  --ink: var(--c-bone);
+  --ink-soft: var(--c-bone-soft);
+  --ink-muted: var(--c-bone-muted);
+  --line: var(--c-bone);
+  --shadow-color: var(--c-bone);
+  --accent-text: var(--c-lime);
+  --link: var(--c-lime);
+  --link-deco: var(--c-lime);
+  --focus: var(--c-cyan);
+  --mark-bg: transparent;
+  --mark-ink: var(--c-lime);
+}
+
+/* No-JS + light OS: the band must flip to void too. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .invert {
+    color-scheme: dark;
+    --bg: #141418;
+    --bg-alt: #141418;
+    --panel: var(--c-void-2);
+    --panel-2: var(--c-void-3);
+    --ink: var(--c-bone);
+    --ink-soft: var(--c-bone-soft);
+    --ink-muted: var(--c-bone-muted);
+    --line: var(--c-bone);
+    --shadow-color: var(--c-bone);
+    --accent-text: var(--c-lime);
+    --link: var(--c-lime);
+    --link-deco: var(--c-lime);
+    --focus: var(--c-cyan);
+    --mark-bg: transparent;
+    --mark-ink: var(--c-lime);
+  }
+}
+
+@media (max-width: 40rem) {
+  :root {
+    --tilt-scale: 0.45;
+    --shadow-offset: 5px;
+  }
+}

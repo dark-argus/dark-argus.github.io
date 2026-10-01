@@ -1,0 +1,34 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Listing from '@/components/listing/Listing.astro';
+import { getAllPosts, tagCounts, type AnyPost } from '@/lib/posts';
+import { withBase } from '@/lib/url';
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  return tagCounts(posts).map(({ tag }) => ({
+    params: { tag },
+    props: { tag, posts: posts.filter((p) => p.data.tags.includes(tag)) },
+  }));
+}
+
+const { tag, posts } = Astro.props as { tag: string; posts: AnyPost[] };
+---
+
+<BaseLayout title={`#${tag}`} description={`Research and writeups tagged #${tag}.`}>
+  <PageHeader eyebrow="// Tag" title={`#${tag}`} count={posts.length}>
+    <a class="arrow-link arrow-link--back" href={withBase('/tags/')}>All tags</a>
+  </PageHeader>
+  <section class="section section--alt" aria-label={`Posts tagged ${tag}`}>
+    <div class="container">
+      <Listing posts={posts} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section {
+    border-top: 0;
+  }
+</style>

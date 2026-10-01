@@ -1,0 +1,70 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Listing from '@/components/listing/Listing.astro';
+import { getWriteups, tagCounts } from '@/lib/posts';
+import { CATEGORIES, DIFFICULTIES } from '@/lib/taxonomy';
+
+const posts = await getWriteups();
+
+const count = <T extends string>(pick: (p: (typeof posts)[number]) => T) => {
+  const m = new Map<T, number>();
+  for (const p of posts) m.set(pick(p), (m.get(pick(p)) ?? 0) + 1);
+  return m;
+};
+const platformKey = (s: string) => s.toLowerCase().replace(/\s+/g, '-');
+const platforms = new Map<string, { label: string; count: number }>();
+for (const p of posts) {
+  const k = platformKey(p.data.platform);
+  platforms.set(k, { label: p.data.platform, count: (platforms.get(k)?.count ?? 0) + 1 });
+}
+const cats = count((p) => p.data.category);
+const diffs = count((p) => p.data.difficulty);
+
+const facets = [
+  {
+    name: 'platform',
+    label: 'Platform',
+    options: [...platforms].map(([value, { label, count }]) => ({ value, label, count })),
+  },
+  {
+    name: 'category',
+    label: 'Category',
+    options: CATEGORIES.filter((c) => cats.has(c)).map((c) => ({ value: c, label: c, count: cats.get(c)! })),
+  },
+  {
+    name: 'difficulty',
+    label: 'Difficulty',
+    options: DIFFICULTIES.filter((d) => diffs.has(d)).map((d) => ({ value: d, label: d, count: diffs.get(d)! })),
+  },
+  {
+    name: 'tags',
+    label: 'Tag',
+    options: tagCounts(posts).map(({ tag, count }) => ({ value: tag, label: `#${tag}`, count })),
+  },
+];
+---
+
+<BaseLayout
+  title="Writeups"
+  description="CTF, Hack The Box and TryHackMe writeups with the dead ends left in. Filter by platform, category and difficulty."
+>
+  <PageHeader
+    eyebrow="// Writeups"
+    title="Writeups"
+    count={posts.length}
+    script="dead ends included."
+    lede="CTF, HTB and THM walkthroughs. Filter by platform, category and difficulty — filters combine."
+  />
+  <section class="section section--alt listing-section" aria-label="Writeups">
+    <div class="container">
+      <Listing posts={posts} facets={facets} noun="writeups" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .listing-section {
+    border-top: 0;
+  }
+</style>

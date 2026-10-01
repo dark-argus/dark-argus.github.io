@@ -1,0 +1,59 @@
+---
+/** Top band for index pages: eyebrow, big title, lede, optional script aside. */
+interface Props {
+  eyebrow: string;
+  title: string;
+  lede?: string;
+  script?: string;
+  count?: number;
+}
+const { eyebrow, title, lede, script, count } = Astro.props;
+---
+
+<header class="page-header">
+  <div class="container inner">
+    <p class="eyebrow">{eyebrow}</p>
+    <h1 class="display title">
+      {title}
+      {count !== undefined && <sup class="count" aria-label={`${count} posts`}>{count}</sup>}
+    </h1>
+    {script && <p class="script aside" aria-hidden="true">{script}</p>}
+    {lede && <p class="lede">{lede}</p>}
+    <slot />
+  </div>
+</header>
+
+<style>
+  .page-header {
+    border-bottom: var(--border);
+    padding-block: clamp(2.75rem, 1.5rem + 4vw, 4.5rem) clamp(2.25rem, 1rem + 3vw, 3.5rem);
+  }
+  .inner {
+    display: grid;
+    gap: 1.1rem;
+    justify-items: start;
+  }
+  .title {
+    font-size: clamp(3.25rem, 1.5rem + 7vw, 7rem);
+  }
+  .count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.4em;
+    margin-left: 0.25em;
+    padding: 0.2em 0.5em;
+    border: var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--c-lime);
+    color: var(--c-ink);
+    font-family: var(--ff-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    vertical-align: super;
+    line-height: 1.2;
+  }
+  .aside {
+    font-size: clamp(1.9rem, 1.2rem + 2vw, 2.75rem);
+    margin-top: -0.4rem;
+  }
+</style>

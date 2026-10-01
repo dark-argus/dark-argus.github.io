@@ -1,0 +1,330 @@
+---
+/**
+ * "What's in the vault": bento grid of tilted cards, all driven by real
+ * content (featured research, platforms, tags, latest writeup, RSS).
+ */
+import CveBadge from '../ui/CveBadge.astro';
+import TagChip from '../ui/TagChip.astro';
+import WriteupBadges from '../ui/WriteupBadges.astro';
+import { withBase, absoluteUrl } from '@/lib/url';
+import { accentFor, DIFFICULTIES } from '@/lib/taxonomy';
+import { disclosureStages, postPath, tagCounts, type Research, type Writeup } from '@/lib/posts';
+
+interface Props {
+  featured?: Research;
+  latestWriteup?: Writeup;
+  writeups: Writeup[];
+  allTags: ReturnType<typeof tagCounts>;
+}
+const { featured, latestWriteup, writeups, allTags } = Astro.props;
+
+// Platform rows: count + difficulty range, most-used platform first.
+const byPlatform = new Map<string, Writeup[]>();
+for (const w of writeups) byPlatform.set(w.data.platform, [...(byPlatform.get(w.data.platform) ?? []), w]);
+const platforms = [...byPlatform]
+  .map(([name, list]) => {
+    const levels = list.map((w) => DIFFICULTIES.indexOf(w.data.difficulty));
+    const lo = DIFFICULTIES[Math.min(...levels)]!;
+    const hi = DIFFICULTIES[Math.max(...levels)]!;
+    return { name, count: list.length, range: lo === hi ? lo : `${lo}–${hi}` };
+  })
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 4);
+
+const feedUrl = absoluteUrl('/rss.xml', Astro.site);
+const stages = disclosureStages(featured?.data.disclosure).slice(0, 4);
+---
+
+<section class="section section--alt vault" id="vault" aria-labelledby="vault-title">
+  <div class="container">
+    <header class="section-head">
+      <p class="eyebrow">// 02 The vault</p>
+      <h2 id="vault-title" class="section-title">What's in the vault</h2>
+    </header>
+
+    <div class="bento">
+      {
+        featured && (
+          <article class="card sticker tilt-5 fill-violet acc-lime featured">
+            <div class="chips">
+              <span class="chip chip--solid on-color-border">Featured research</span>
+              {featured.data.cve?.map((id) => <CveBadge id={id} class="raise" />)}
+            </div>
+            <h3 class="big-title">
+              <a class="stretched" href={withBase(postPath(featured))}>{featured.data.title}</a>
+            </h3>
+            <div class="inset">
+              <p>{featured.data.summary}</p>
+              {stages.length > 0 && (
+                <ol class="stages" role="list" aria-label="Disclosure stages">
+                  {stages.map((s) => (
+                    <li class={`stage acc-${s.accent}`} title={s.title}>
+                      {s.label}
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+          </article>
+        )
+      }
+
+      <div class="card sticker tilt-6 acc-orange platforms">
+        <h3 class="card-title">Writeups by platform</h3>
+        <ul role="list">
+          {
+            platforms.map((p) => (
+              <li class={`platform acc-${accentFor(p.name)}`}>
+                <span class="dot" aria-hidden="true" />
+                <span class="pname">{p.name}</span>
+                <span class="pmeta">
+                  {p.count} · {p.range}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+        <a class="arrow-link" href={withBase('/writeups/')}>All writeups</a>
+      </div>
+
+      <div class="card sticker tilt-7 fill-bone acc-violet tags">
+        <h3 class="card-title">Poke around by tag</h3>
+        <div class="cloud on-color">
+          {allTags.slice(0, 14).map(({ tag, count }) => <TagChip tag={tag} variant="fill" count={count} />)}
+        </div>
+      </div>
+
+      {
+        latestWriteup && (
+          <article class="card sticker tilt-8 fill-orange acc-cyan latest">
+            <div class="chips on-color">
+              <WriteupBadges data={latestWriteup.data} size="sm" />
+            </div>
+            <h3 class="card-title lg">
+              <a class="stretched" href={withBase(postPath(latestWriteup))}>{latestWriteup.data.title}</a>
+            </h3>
+            <p class="summary">{latestWriteup.data.summary}</p>
+            <span class="read i-arrow" aria-hidden="true">
+              Read writeup
+            </span>
+          </article>
+        )
+      }
+
+      <div class="card sticker tilt-5 fill-lime acc-bone rss" id="rss">
+        <h3 class="card-title lg">Follow via RSS</h3>
+        <p>No accounts, no tracking. Add the feed to any reader.</p>
+        <a class="feed" href={withBase('/rss.xml')}>{feedUrl.replace(/^https?:\/\//, '')}</a>
+        <button type="button" class="btn btn--dark btn--sm acc-bone" data-copy={feedUrl}>Copy feed URL</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '@/scripts/copy';
+</script>
+
+<style>
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+  .bento > .card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem 1.65rem;
+  }
+  .card-title {
+    font-family: var(--ff-display);
+    font-weight: 400;
+    font-size: 1.75rem;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  .card-title.lg {
+    font-size: clamp(1.9rem, 1.5rem + 1vw, 2.25rem);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  /* featured (violet) */
+  .featured {
+    grid-column: span 2;
+    justify-content: space-between;
+    gap: 1.25rem !important;
+    padding: 1.75rem 2rem !important;
+  }
+  .featured .on-color-border {
+    border-color: var(--c-ink);
+  }
+  .big-title {
+    font-family: var(--ff-display);
+    font-weight: 400;
+    font-size: clamp(2.2rem, 1.2rem + 2.6vw, 3.5rem);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .inset {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--c-void);
+    color: var(--c-bone);
+    border: var(--bw) solid var(--c-bone);
+  }
+  .inset p {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  .stages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.6rem;
+    margin: 0;
+  }
+  .stage {
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-pill);
+    background: var(--acc);
+    color: var(--c-ink);
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .stage.acc-bone {
+    background: var(--c-bone);
+  }
+  .stage {
+    position: relative;
+  }
+  .stage:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -1.3rem;
+    top: 50%;
+    translate: 0 -50%;
+    width: 0.95rem;
+    height: 0.7rem;
+    background: var(--c-bone);
+    mask: var(--arrow-mask) center / contain no-repeat;
+  }
+
+  /* platforms */
+  .platforms {
+    background: var(--bg) !important;
+  }
+  .platforms ul {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+  }
+  .platform {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    border: var(--border);
+    background: var(--panel);
+  }
+  .dot {
+    width: 0.875rem;
+    height: 0.875rem;
+    flex: none;
+    border-radius: 50%;
+    background: var(--acc);
+    border: var(--bw-thin) solid var(--line);
+  }
+  .pname {
+    font-family: var(--ff-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .pmeta {
+    margin-left: auto;
+    font-family: var(--ff-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+  .platforms .arrow-link {
+    margin-top: auto;
+  }
+
+  /* tag cloud */
+  .cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  /* latest writeup */
+  .latest .summary,
+  .rss p {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  .read {
+    margin-top: auto;
+    font-family: var(--ff-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* rss */
+  .feed {
+    display: block;
+    padding: 0.75rem 0.9rem;
+    background: var(--c-ink);
+    color: var(--c-lime);
+    border: var(--bw) solid var(--c-ink);
+    font-family: var(--ff-mono);
+    font-size: 0.875rem;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+  }
+  .feed:hover {
+    text-decoration: underline;
+  }
+  .rss .btn {
+    align-self: flex-start;
+  }
+  /* JS-only control: shown via html.js (set before paint → no layout shift) */
+  .rss .btn {
+    display: none;
+  }
+  :global(html.js) .rss .btn {
+    display: inline-flex;
+  }
+  .rss .btn:focus-visible,
+  .rss .feed:focus-visible {
+    outline-color: var(--c-ink);
+  }
+
+  @media (max-width: 64rem) {
+    .bento {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 40rem) {
+    .bento {
+      grid-template-columns: 1fr;
+      gap: 1.75rem;
+    }
+    .featured {
+      grid-column: auto;
+    }
+  }
+</style>

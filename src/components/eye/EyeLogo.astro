@@ -1,0 +1,99 @@
+---
+/**
+ * The Argus eye. Static SVG; with `track`, /scripts/eye-track.ts moves the
+ * iris group toward the cursor (off under reduced motion / touch-only).
+ * The iris is clipped to the almond so it never spills over the lids.
+ *
+ * variant "logo"    → dark almond, lime iris, outlined in the theme line color
+ * variant "sticker" → bone almond, ink iris, lime pupil, ink outline
+ */
+interface Props {
+  size?: number | string;
+  track?: boolean;
+  /** Accessible name. Omit for decorative use (then aria-hidden). */
+  title?: string;
+  class?: string;
+  variant?: 'logo' | 'sticker';
+}
+const { size = 46, track = false, title, class: cls = '', variant = 'logo' } = Astro.props;
+const uid = `eye-${crypto.randomUUID().slice(0, 8)}`;
+const w = typeof size === 'number' ? `${size}px` : size;
+const almond = 'M3 24C11 9 37 9 45 24 37 39 11 39 3 24Z';
+---
+
+<svg
+  class:list={['argus-eye', `v-${variant}`, cls]}
+  viewBox="0 0 48 48"
+  width={w}
+  height={w}
+  role={title ? 'img' : undefined}
+  aria-label={title}
+  aria-hidden={title ? undefined : 'true'}
+  focusable="false"
+  data-eye={track ? '' : undefined}
+  data-range="4.5"
+>
+  <defs>
+    <clipPath id={`${uid}-clip`}><path d={almond}></path></clipPath>
+  </defs>
+  <path class="sclera" d={almond}></path>
+  <g clip-path={`url(#${uid}-clip)`}>
+    <g data-eye-iris class="iris-group">
+      <circle class="iris" cx="24" cy="24" r={variant === 'logo' ? 9.5 : 10}></circle>
+      <circle class="pupil" cx="24" cy="24" r={variant === 'logo' ? 3.8 : 4}></circle>
+      <circle class="glint" cx={variant === 'logo' ? 27.2 : 28} cy={variant === 'logo' ? 20.8 : 20} r="1.9"></circle>
+    </g>
+  </g>
+  <!-- outline drawn last so it covers the clipped iris edge -->
+  <path class="outline" d={almond}></path>
+</svg>
+
+<style>
+  .argus-eye {
+    display: inline-block;
+    overflow: visible;
+    flex: none;
+  }
+  .outline {
+    fill: none;
+    stroke-width: 3.5;
+    stroke-linejoin: round;
+  }
+  .iris-group {
+    transition: transform 90ms linear;
+  }
+  .glint {
+    fill: var(--c-bone);
+  }
+
+  /* logo */
+  .v-logo .sclera {
+    fill: var(--bg);
+  }
+  .v-logo .outline {
+    stroke: var(--line);
+  }
+  .v-logo .iris {
+    fill: var(--c-lime);
+    stroke: var(--line);
+    stroke-width: 3;
+  }
+  .v-logo .pupil {
+    fill: var(--c-void);
+  }
+
+  /* sticker */
+  .v-sticker .sclera {
+    fill: var(--c-bone);
+  }
+  .v-sticker .outline {
+    stroke: var(--c-ink);
+    stroke-width: 3;
+  }
+  .v-sticker .iris {
+    fill: var(--c-ink);
+  }
+  .v-sticker .pupil {
+    fill: var(--c-lime);
+  }
+</style>

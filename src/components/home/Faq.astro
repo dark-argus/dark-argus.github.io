@@ -1,0 +1,114 @@
+---
+/** Chunky accordion — native <details>/<summary>, keyboard-accessible, no JS. */
+import { FAQ } from '@/data/home';
+---
+
+<section class="section faq" id="faq" aria-labelledby="faq-title">
+  <div class="container grid">
+    <div class="intro">
+      <p class="eyebrow">// 05 FAQ</p>
+      <h2 id="faq-title" class="section-title">Questions,<br />answered.</h2>
+      <p class="script ask" aria-hidden="true">ask away.</p>
+    </div>
+    <div class="items">
+      {
+        FAQ.map((f, i) => (
+          <details class={`item acc-${f.accent}`} open={i === 0}>
+            <summary>
+              <span>{f.q}</span>
+              <span class="toggle" aria-hidden="true" />
+            </summary>
+            <p class="soft">{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.3fr);
+    gap: clamp(2.5rem, 1rem + 4vw, 4rem);
+    align-items: start;
+  }
+  .intro {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+  .ask {
+    font-size: 2.875rem;
+  }
+  .items {
+    display: grid;
+    gap: 1rem;
+  }
+  .item {
+    border: var(--border);
+    background: var(--panel);
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--acc);
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.4rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+    list-style: none;
+    cursor: pointer;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary:focus-visible {
+    outline-offset: -8px;
+  }
+  /* +/− drawn in CSS inside a bordered circle */
+  .toggle {
+    position: relative;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: none;
+    border: var(--border);
+    border-radius: 50%;
+    background: var(--acc);
+    transition: rotate var(--dur) var(--ease-spring);
+  }
+  .item.acc-violet .toggle {
+    background: var(--c-bone);
+  }
+  .toggle::before,
+  .toggle::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0.9rem;
+    height: 3px;
+    background: var(--c-ink);
+    translate: -50% -50%;
+    border-radius: 2px;
+  }
+  .toggle::after {
+    rotate: 90deg;
+    transition: rotate var(--dur) var(--ease-out);
+  }
+  details[open] .toggle::after {
+    rotate: 0deg;
+  }
+  .item p {
+    padding: 0 1.4rem 1.4rem;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  @media (max-width: 56rem) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

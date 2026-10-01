@@ -1,0 +1,143 @@
+/* ==========================================================================
+   Code + terminal frames (markup from lib/markdown/plugins.ts).
+   Chunky borders and hard shadows outside; calm, legible code inside.
+   Code blocks stay dark in both themes (Shiki "argus" theme).
+   ========================================================================== */
+
+.code-frame {
+  --frame: var(--line);
+  --bar-line: var(--c-bone);
+  display: flex;
+  flex-direction: column;
+  margin-block: 2rem;
+  background: var(--code-bg);
+  border: var(--bw) solid var(--frame);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--c-violet);
+  font-size: 1rem; /* reset .prose sizing for the bar */
+}
+[data-theme='paper'] .code-frame {
+  --bar-line: #34343d;
+}
+.prose > .code-frame + :not(h2, h3, h4) {
+  margin-top: 1.75rem;
+}
+
+/* The bar is after <pre> in the DOM (wrapNode) — pulled to the top visually. */
+.code-bar {
+  order: -1;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.5rem;
+  padding: 0.35rem 0.5rem 0.35rem 1rem;
+  background: #16161d;
+  border-bottom: var(--bw) solid var(--bar-line);
+  font-family: var(--ff-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-bone-muted);
+}
+.code-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.code-copy {
+  flex: none;
+  padding: 0.2rem 0.7rem;
+  border: var(--bw-thin) solid var(--c-bone);
+  background: transparent;
+  color: var(--c-bone);
+  font: inherit;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.code-copy:hover {
+  background: var(--c-bone);
+  color: var(--c-ink);
+}
+.code-copy[data-state='copied'] {
+  background: var(--c-lime);
+  border-color: var(--c-lime);
+  color: var(--c-ink);
+}
+.code-copy:focus-visible {
+  outline: var(--focus-width) solid var(--c-cyan);
+  outline-offset: 2px;
+}
+.code-copy[hidden] {
+  display: none;
+}
+
+.code-frame pre {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  background: transparent !important; /* Shiki sets an inline background */
+  color: var(--c-bone); /* default for non-Shiki <pre> (e.g. the PGP block) */
+  font-family: var(--ff-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  tab-size: 4;
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0;
+  scrollbar-color: #3a3a44 transparent;
+}
+.code-frame pre:focus-visible {
+  outline: var(--focus-width) solid var(--c-cyan);
+  outline-offset: -4px;
+}
+.code-frame code {
+  font-family: inherit;
+  counter-reset: none;
+}
+
+/* ---- terminal variant: orange bar, darker bg, prompts + output ---- */
+.code-frame--terminal {
+  background: var(--term-bg);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--c-orange);
+}
+.code-frame--terminal .code-bar {
+  background: var(--c-orange);
+  color: var(--c-ink);
+  border-bottom-color: var(--frame);
+}
+[data-theme='void'] .code-frame--terminal .code-bar,
+:root:not([data-theme]) .code-frame--terminal .code-bar {
+  border-bottom-color: var(--c-bone);
+}
+.code-frame--terminal .code-copy {
+  border-color: var(--c-ink);
+  color: var(--c-ink);
+}
+.code-frame--terminal .code-copy:hover {
+  background: var(--c-ink);
+  color: var(--c-orange);
+}
+.code-frame--terminal .prompt {
+  color: var(--c-lime) !important;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.code-frame--terminal .line.cmd,
+.code-frame--terminal .line.cmd span {
+  color: var(--c-bone) !important; /* commands in plain bone, like a real terminal */
+}
+.code-frame--terminal .line.cmd .prompt {
+  color: var(--c-lime) !important;
+}
+.code-frame--terminal .line.out,
+.code-frame--terminal .line.out span {
+  color: var(--c-bone-muted) !important;
+  font-style: normal !important;
+}
+
+/* diff: tint whole lines */
+.code-frame pre[data-lang='diff'] .line:has(> span:first-child) {
+  display: inline-block;
+  min-width: 100%;
+}

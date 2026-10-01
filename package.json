@@ -1,0 +1,37 @@
+{
+  "name": "dark-argus",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build && pagefind --site dist",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/markdown-satteri": "^0.4.2",
+    "@astrojs/mdx": "^8.0.2",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "@resvg/resvg-js": "^2.6.2",
+    "astro": "^7.3.5",
+    "github-slugger": "^2.0.0",
+    "pagefind": "^1.5.2",
+    "satori": "^0.33.5",
+    "satteri": "^0.10.5",
+    "sharp": "^0.35.5",
+    "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "@types/hast": "^3.0.5",
+    "@types/mdast": "^4.0.4",
+    "shiki": "^4.4.3"
+  },
+  "description": "dark-argus — a neo-brutalist, static, Markdown-driven security research & CTF writeup blog (Astro).",
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

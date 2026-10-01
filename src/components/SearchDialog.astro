@@ -1,0 +1,72 @@
+---
+import SearchUI from './SearchUI.astro';
+---
+
+<dialog class="search-dialog" aria-labelledby="search-dialog-title" data-search-dialog>
+  <div class="bar">
+    <p id="search-dialog-title" class="title">search.exe</p>
+    <button type="button" class="close" data-search-close aria-label="Close search">Esc</button>
+  </div>
+  <div class="body">
+    <SearchUI id="dlg" />
+  </div>
+</dialog>
+
+<style>
+  .search-dialog {
+    width: min(44rem, calc(100vw - 2rem));
+    max-height: min(40rem, calc(100dvh - 4rem));
+    margin: 8vh auto auto;
+    padding: 0;
+    border: var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    box-shadow: 10px 10px 0 var(--c-violet);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+  }
+  .search-dialog[open] {
+    display: flex;
+  }
+  .search-dialog::backdrop {
+    background: rgb(8 8 12 / 0.72);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.55rem 0.6rem 0.55rem 1rem;
+    background: var(--c-lime);
+    color: var(--c-ink);
+    border-bottom: var(--border);
+  }
+  .title {
+    font-family: var(--ff-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .close {
+    padding: 0.25rem 0.7rem;
+    border: var(--bw-thin) solid var(--c-ink);
+    background: transparent;
+    color: var(--c-ink);
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .close:hover {
+    background: var(--c-ink);
+    color: var(--c-lime);
+  }
+  .close:focus-visible {
+    outline-color: var(--c-ink);
+  }
+  .body {
+    padding: 1.25rem;
+    overflow-y: auto;
+  }
+</style>

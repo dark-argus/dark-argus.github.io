@@ -1,0 +1,101 @@
+---
+/** Disclosure timeline block (research frontmatter `disclosure`). */
+import { formatDate, isoDate } from '@/lib/posts';
+
+interface Props {
+  events: { date: Date; event: string }[];
+}
+const { events } = Astro.props;
+const dots = ['lime', 'cyan', 'orange', 'bone'];
+---
+
+<section class="timeline" aria-labelledby="disclosure-timeline">
+  <h2 id="disclosure-timeline" class="tl-title">Disclosure timeline</h2>
+  <ol role="list">
+    {
+      events.map((e, i) => (
+        <li>
+          <span class={`dot dot--${i === events.length - 1 ? 'bone' : dots[i % 3]}`} aria-hidden="true" />
+          <time datetime={isoDate(e.date)}>{formatDate(e.date)}</time>
+          <span class="ev">{e.event}</span>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .timeline {
+    margin-top: 3rem;
+    padding: 1.4rem 1.5rem;
+    background: var(--panel);
+    border: var(--border);
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--c-violet);
+  }
+  .tl-title {
+    font-family: var(--ff-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+    scroll-margin-top: 6rem;
+  }
+  ol {
+    position: relative;
+    display: grid;
+    gap: 0.9rem;
+    margin: 1rem 0 0;
+  }
+  /* rail connecting the dots */
+  ol::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    border-left: var(--bw-thin) dashed var(--line);
+  }
+  li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1rem 8.5rem 1fr;
+    gap: 1rem;
+    align-items: baseline;
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+  .dot {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: var(--bw) solid var(--line);
+    align-self: center;
+  }
+  .dot--lime {
+    background: var(--c-lime);
+  }
+  .dot--cyan {
+    background: var(--c-cyan);
+  }
+  .dot--orange {
+    background: var(--c-orange);
+  }
+  .dot--bone {
+    background: var(--c-bone);
+  }
+  time {
+    font-family: var(--ff-mono);
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+  }
+  @media (max-width: 30rem) {
+    li {
+      grid-template-columns: 1rem 1fr;
+      row-gap: 0.1rem;
+    }
+    .ev {
+      grid-column: 2;
+    }
+  }
+</style>

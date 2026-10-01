@@ -1,0 +1,157 @@
+---
+/**
+ * CSS-only, combinable filters. Each facet is a radio group styled as chips.
+ * At build time we emit one rule per option:
+ *
+ *   .listing:has(input[name=category][value=web]:checked)
+ *     .post-card:not([data-category~="web"]) { display: none }
+ *
+ * so filters combine (AND across facets) with zero JavaScript. The result
+ * count is a CSS counter over the cards that are still displayed, and the
+ * native <button type="reset"> clears everything.
+ *
+ * Must be placed inside an element with class "listing" that also contains
+ * the .post-card grid and (optionally) a .results line after the grid.
+ */
+export interface FacetOption {
+  value: string;
+  label: string;
+  count: number;
+}
+export interface Facet {
+  /** matches the card's data-<name> attribute */
+  name: string;
+  label: string;
+  options: FacetOption[];
+}
+interface Props {
+  facets: Facet[];
+  label?: string;
+}
+const { facets, label = 'Filter posts' } = Astro.props;
+const visibleFacets = facets.filter((f) => f.options.length > 1);
+
+const esc = (v: string) => v.replace(/["\\]/g, '\\$&');
+const css = visibleFacets
+  .flatMap((f) =>
+    f.options.map(
+      (o) =>
+        `.listing:has(input[name="${esc(f.name)}"][value="${esc(o.value)}"]:checked) .post-card:not([data-${f.name}~="${esc(o.value)}"]){display:none}`,
+    ),
+  )
+  .join('\n');
+---
+
+{
+  visibleFacets.length > 0 && (
+    <form class="filters" aria-label={label}>
+      {visibleFacets.map((f) => (
+        <fieldset>
+          <legend>{f.label}</legend>
+          <div class="opts">
+            <input type="radio" class="visually-hidden" name={f.name} id={`f-${f.name}-all`} value="" checked />
+            <label for={`f-${f.name}-all`}>All</label>
+            {f.options.map((o) => (
+              <>
+                <input type="radio" class="visually-hidden" name={f.name} id={`f-${f.name}-${o.value}`} value={o.value} />
+                <label for={`f-${f.name}-${o.value}`}>
+                  {o.label}
+                  <span class="n">{o.count}</span>
+                </label>
+              </>
+            ))}
+          </div>
+        </fieldset>
+      ))}
+      <button type="reset" class="btn btn--ghost btn--sm reset">
+        Reset filters
+      </button>
+    </form>
+  )
+}
+<style is:inline set:html={css}></style>
+
+<style>
+  .filters {
+    display: grid;
+    gap: 1.1rem;
+    padding: 1.25rem 1.4rem;
+    border: var(--border);
+    background: var(--panel);
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--c-lime);
+  }
+  fieldset {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    align-items: baseline;
+    gap: 0.75rem;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+  fieldset + fieldset {
+    padding-top: 1.1rem;
+    border-top: var(--bw-thin) dashed color-mix(in srgb, var(--line) 40%, transparent);
+  }
+  legend {
+    float: left; /* lets the legend sit in the grid's first column */
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+    padding: 0;
+  }
+  .opts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    padding: 0.3em 0.85em;
+    border: var(--bw-thin) solid var(--line);
+    border-radius: var(--radius-pill);
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      transform var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out);
+  }
+  label:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 3px 3px 0 var(--shadow-color);
+  }
+  .n {
+    opacity: 0.7;
+    font-weight: 500;
+  }
+  input:checked + label {
+    background: var(--c-lime);
+    color: var(--c-ink);
+    border-color: var(--line);
+    box-shadow: 3px 3px 0 var(--shadow-color);
+  }
+  input:focus-visible + label {
+    outline: var(--focus-width) solid var(--focus);
+    outline-offset: 3px;
+  }
+  .reset {
+    justify-self: start;
+  }
+  @media (max-width: 40rem) {
+    fieldset {
+      grid-template-columns: 1fr;
+      gap: 0.6rem;
+    }
+  }
+</style>

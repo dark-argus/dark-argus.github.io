@@ -1,0 +1,112 @@
+---
+/**
+ * Table of contents from Astro's heading list (h2 + h3).
+ * Desktop: sticky panel. Mobile/tablet: a collapsible <details> above the
+ * article. Both are kept in sync by /scripts/toc-spy.ts (aria-current).
+ */
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+  variant: 'sidebar' | 'inline';
+}
+const { headings, variant } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+  items.length > 1 &&
+    (variant === 'sidebar' ? (
+      <nav class="toc toc--sidebar" aria-labelledby="toc-title-side" data-toc>
+        <p class="toc-title" id="toc-title-side">On this page</p>
+        <ol role="list">
+          {items.map((h) => (
+            <li class={`d${h.depth}`}>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    ) : (
+      <details class="toc toc--inline" data-toc>
+        <summary class="toc-title">On this page · {items.length} sections</summary>
+        <ol role="list">
+          {items.map((h) => (
+            <li class={`d${h.depth}`}>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ol>
+      </details>
+    ))
+}
+
+<style>
+  .toc {
+    padding: 1.25rem 1.35rem;
+    background: var(--panel);
+    border: var(--border);
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--c-lime);
+  }
+  .toc--sidebar {
+    position: sticky;
+    top: 6rem;
+    max-height: calc(100dvh - 8rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .toc-title {
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  ol {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0.85rem 0 0;
+  }
+  a {
+    display: block;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.35;
+    text-decoration: none;
+    border: var(--bw-thin) solid transparent;
+  }
+  .d3 a {
+    padding-left: 1.4rem;
+    font-size: 0.875rem;
+    color: var(--ink-soft);
+  }
+  a:hover {
+    border-color: var(--line);
+  }
+  a[aria-current='location'] {
+    background: var(--c-lime);
+    color: var(--c-ink);
+    font-weight: 700;
+  }
+
+  .toc--inline summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .toc--inline summary::-webkit-details-marker {
+    display: none;
+  }
+  .toc--inline summary::after {
+    content: '+';
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+  .toc--inline[open] summary::after {
+    content: '−';
+  }
+</style>

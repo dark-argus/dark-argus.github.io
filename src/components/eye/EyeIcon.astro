@@ -1,0 +1,21 @@
+---
+/** Small outline eye glyph (bullets, tag markers, ticker separators). Inherits currentColor. */
+interface Props {
+  size?: string;
+  class?: string;
+}
+const { size = '1.1em', class: cls = '' } = Astro.props;
+---
+
+<svg class:list={['eye-icon', cls]} viewBox="0 0 48 48" width={size} height={size} aria-hidden="true" focusable="false">
+  <path d="M4 24C12 10 36 10 44 24 36 38 12 38 4 24Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"></path>
+  <circle cx="24" cy="24" r="8" fill="currentColor"></circle>
+</svg>
+
+<style>
+  .eye-icon {
+    display: inline-block;
+    vertical-align: -0.2em;
+    flex: none;
+  }
+</style>

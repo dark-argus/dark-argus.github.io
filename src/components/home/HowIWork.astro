@@ -1,0 +1,100 @@
+---
+import { METHOD, METHOD_NOTE } from '@/data/home';
+---
+
+<section class="section how" id="how" aria-labelledby="how-title">
+  <div class="container">
+    <header class="section-head">
+      <p class="eyebrow">// 03 Method</p>
+      <h2 id="how-title" class="section-title">How I work</h2>
+    </header>
+
+    <ol class="steps" role="list">
+      {
+        METHOD.map((m, i) => (
+          <li class="step">
+            <span class={`num-circle acc-${m.accent}`} aria-hidden="true">
+              {i + 1}
+            </span>
+            <h3>
+              <span class="visually-hidden">Step {i + 1}: </span>
+              {m.title}
+            </h3>
+            <p class="soft">{m.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="note-box">
+      <span class="label">{METHOD_NOTE.label}</span>
+      <p>{METHOD_NOTE.body}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .steps {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+    margin: 0 0 2.75rem;
+  }
+  /* dashed connector behind the circles */
+  .steps::before {
+    content: '';
+    position: absolute;
+    left: 12.5%;
+    right: 12.5%;
+    top: 2.625rem;
+    border-top: var(--bw) dashed var(--line);
+  }
+  .step {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.875rem;
+    text-align: center;
+  }
+  h3 {
+    font-family: var(--ff-display);
+    font-weight: 400;
+    font-size: 1.875rem;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  .step p {
+    max-width: 16rem;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+  /* vertical on narrow screens */
+  @media (max-width: 48rem) {
+    .steps {
+      grid-template-columns: 1fr;
+      gap: 1.75rem;
+    }
+    .steps::before {
+      left: 2.625rem;
+      right: auto;
+      top: 2rem;
+      bottom: 2rem;
+      border-top: 0;
+      border-left: var(--bw) dashed var(--line);
+    }
+    .step {
+      grid-template-columns: auto 1fr;
+      justify-items: start;
+      text-align: left;
+      column-gap: 1.25rem;
+      row-gap: 0.25rem;
+    }
+    .step :global(.num-circle) {
+      grid-row: span 2;
+    }
+    .step h3 {
+      align-self: end;
+    }
+  }
+</style>

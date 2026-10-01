@@ -1,0 +1,29 @@
+---
+/** Linked CVE badge → NVD. */
+interface Props {
+  id: string;
+  size?: 'sm' | 'md';
+  class?: string;
+}
+const { id, size = 'md', class: cls = '' } = Astro.props;
+---
+
+<a
+  class:list={['chip chip--ink cve', { 'chip--sm': size === 'sm' }, cls]}
+  href={`https://nvd.nist.gov/vuln/detail/${id}`}
+  rel="noopener noreferrer"
+  title={`${id} on NVD`}
+>
+  {id}
+</a>
+
+<style>
+  .cve {
+    text-transform: none;
+    letter-spacing: 0.08em;
+  }
+  .cve:hover {
+    background: var(--c-lime);
+    color: var(--c-ink);
+  }
+</style>

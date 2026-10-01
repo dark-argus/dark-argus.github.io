@@ -1,0 +1,238 @@
+---
+/**
+ * Post template (research + writeups).
+ * Chrome (header band, chips, prev/next) is brutalist; the article itself
+ * is a calm reading surface: flat background, 70ch, 18px, no motion.
+ */
+import type { MarkdownHeading } from 'astro';
+import { Image } from 'astro:assets';
+import BaseLayout from './BaseLayout.astro';
+import Toc from '@/components/post/Toc.astro';
+import Timeline from '@/components/post/Timeline.astro';
+import PrevNext from '@/components/post/PrevNext.astro';
+import CveBadge from '@/components/ui/CveBadge.astro';
+import TagChip from '@/components/ui/TagChip.astro';
+import WriteupBadges from '@/components/ui/WriteupBadges.astro';
+import { withBase } from '@/lib/url';
+import { formatDate, isoDate, isResearch, readingMinutes, type AnyPost } from '@/lib/posts';
+import '@/styles/prose.css';
+import '@/styles/code.css';
+
+interface Props {
+  post: AnyPost;
+  headings: MarkdownHeading[];
+  prev?: AnyPost;
+  next?: AnyPost;
+}
+const { post, headings, prev, next } = Astro.props;
+const { data } = post;
+const research = isResearch(post);
+const disclosure = research ? post.data.disclosure : undefined;
+const cover = research ? post.data.cover : undefined;
+const coverAlt = research ? (post.data.coverAlt ?? '') : '';
+
+// The timeline is rendered by the layout, so add it to the TOC ourselves.
+const tocHeadings: MarkdownHeading[] = disclosure?.length
+  ? [...headings, { depth: 2, slug: 'disclosure-timeline', text: 'Disclosure timeline' }]
+  : headings;
+const minutes = readingMinutes(post);
+const back = research ? { href: '/research/', label: 'All research' } : { href: '/writeups/', label: 'All writeups' };
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.summary}
+  type="article"
+  image={`/og/${post.collection}/${post.id}.png`}
+  publishedTime={data.date}
+  modifiedTime={data.updated}
+  tags={data.tags}
+>
+  <article
+    class="post"
+    data-pagefind-body
+    data-pagefind-meta={`kind:${research ? 'Research' : `Writeup · ${post.data.platform}`}`}
+  >
+    <header class="post-header">
+      <div class="container inner">
+        <a class="arrow-link arrow-link--back" href={withBase(back.href)} data-pagefind-ignore>{back.label}</a>
+
+        <div class="chips" data-pagefind-ignore>
+          {
+            research ? (
+              <span class="chip chip--solid">Research</span>
+            ) : (
+              <WriteupBadges data={post.data} />
+            )
+          }
+          {data.cve?.map((id) => <CveBadge id={id} />)}
+          {data.tags.map((t) => <TagChip tag={t} />)}
+        </div>
+
+        <h1 class="display title" data-pagefind-meta="title">{data.title}</h1>
+
+        <p class="meta" data-pagefind-ignore>
+          <time datetime={isoDate(data.date)}>{formatDate(data.date)}</time>
+          <span aria-hidden="true">·</span>
+          <span>{minutes} min read</span>
+          {
+            data.updated && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>
+                  Updated <time datetime={isoDate(data.updated)}>{formatDate(data.updated)}</time>
+                </span>
+              </>
+            )
+          }
+        </p>
+        <p class="summary">{data.summary}</p>
+
+        {
+          data.sample && (
+            <p class="sample-flag" data-pagefind-ignore>
+              <strong>Sample post</strong> — placeholder content shipped with the template. Delete{' '}
+              <code>src/content/{post.collection}/sample-*</code> before launch.
+            </p>
+          )
+        }
+      </div>
+    </header>
+
+    {
+      cover && (
+        <div class="container cover-wrap">
+          <Image src={cover} alt={coverAlt} widths={[640, 960, 1280]} sizes="(min-width: 80rem) 1216px, 100vw" loading="eager" fetchpriority="high" class="cover" />
+        </div>
+      )
+    }
+
+    <div class="container body-grid">
+      <aside class="toc-col" aria-label="Table of contents">
+        <Toc headings={tocHeadings} variant="sidebar" />
+      </aside>
+
+      <div class="reading">
+        <div class="toc-inline-wrap">
+          <Toc headings={tocHeadings} variant="inline" />
+        </div>
+
+        <div class="prose">
+          <slot />
+        </div>
+
+        {disclosure && disclosure.length > 0 && <Timeline events={disclosure} />}
+
+        <footer class="post-foot" data-pagefind-ignore>
+          <p class="eyebrow eyebrow--muted">Filed under</p>
+          <div class="chips">{data.tags.map((t) => <TagChip tag={t} variant="fill" />)}</div>
+        </footer>
+      </div>
+    </div>
+  </article>
+
+  <PrevNext prev={prev} next={next} />
+
+  <script>
+    import '@/scripts/toc-spy';
+    import '@/scripts/copy';
+    import '@/scripts/zoom';
+  </script>
+</BaseLayout>
+
+<style>
+  .post-header {
+    border-bottom: var(--border);
+    padding-block: clamp(2.5rem, 1.5rem + 3vw, 3.5rem) clamp(2.25rem, 1.5rem + 2vw, 3rem);
+  }
+  .inner {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+    max-width: calc(66rem + 2 * var(--gutter));
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .title {
+    font-size: var(--fs-2xl);
+    line-height: 0.98;
+    max-width: 20ch;
+    text-wrap: balance;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.6rem;
+    font-family: var(--ff-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .summary {
+    max-width: 47.5rem;
+    font-size: clamp(1.125rem, 1rem + 0.45vw, 1.3125rem);
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .sample-flag {
+    max-width: 47.5rem;
+    padding: 0.75rem 1rem;
+    border: var(--bw) dashed var(--c-orange);
+    font-size: 0.9375rem;
+  }
+  .sample-flag code {
+    font-family: var(--ff-mono);
+    font-size: 0.85em;
+  }
+
+  .cover-wrap {
+    margin-top: 2.5rem;
+  }
+  .cover-wrap :global(.cover) {
+    width: 100%;
+    height: auto;
+    border: var(--border);
+  }
+
+  .body-grid {
+    display: grid;
+    grid-template-columns: 16.25rem minmax(0, var(--measure));
+    justify-content: center;
+    gap: 4rem;
+    padding-block: 3.5rem 5rem;
+  }
+  .toc-col {
+    min-width: 0;
+  }
+  .reading {
+    min-width: 0;
+  }
+  .toc-inline-wrap {
+    display: none;
+  }
+  .post-foot {
+    display: grid;
+    gap: 0.9rem;
+    margin-top: 3.5rem;
+    padding-top: 2rem;
+    border-top: var(--border-dashed);
+  }
+
+  @media (max-width: 64rem) {
+    .body-grid {
+      grid-template-columns: minmax(0, var(--measure));
+      padding-top: 2rem;
+    }
+    .toc-col {
+      display: none;
+    }
+    .toc-inline-wrap {
+      display: block;
+      margin-bottom: 2.25rem;
+    }
+  }
+</style>

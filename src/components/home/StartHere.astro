@@ -1,0 +1,93 @@
+---
+import { START_HERE } from '@/data/home';
+import { withBase } from '@/lib/url';
+---
+
+<section class="section start" id="start" aria-labelledby="start-title">
+  <div class="container grid">
+    <div class="intro">
+      <p class="eyebrow">// 01 Start here</p>
+      <h2 id="start-title" class="section-title">New here?<br />Start here.</h2>
+      <p class="soft">Three doors into the notebook. Pick the one that matches why you showed up.</p>
+    </div>
+    <ol class="doors" role="list">
+      {
+        START_HERE.map((d, i) => (
+          <li class="door">
+            <span class={`numeral acc-${d.accent}`} aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div class="door-body">
+              <h3>{d.title}</h3>
+              <p class="soft">{d.body}</p>
+              <a class="arrow-link" href={withBase(d.href)}>{d.cta}</a>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .start {
+    border-top: 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.1fr);
+    gap: clamp(2.5rem, 1rem + 4vw, 4rem);
+    align-items: start;
+  }
+  .intro {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .intro p:last-child {
+    font-size: var(--fs-md);
+    max-width: 30rem;
+  }
+  .doors {
+    margin: 0;
+  }
+  .door {
+    display: flex;
+    gap: 1.75rem;
+    align-items: flex-start;
+    padding-block: 1.25rem;
+    border-top: var(--bw) dashed color-mix(in srgb, var(--line) 40%, transparent);
+  }
+  .numeral {
+    width: 6.25rem;
+    flex: none;
+  }
+  .door-body {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: start;
+  }
+  h3 {
+    font-family: var(--ff-display);
+    font-weight: 400;
+    font-size: 1.875rem;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  .door-body p {
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  @media (max-width: 56rem) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 30rem) {
+    .door {
+      gap: 1rem;
+    }
+    .numeral {
+      width: 4rem;
+    }
+  }
+</style>

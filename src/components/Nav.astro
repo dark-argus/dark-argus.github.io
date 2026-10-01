@@ -1,0 +1,225 @@
+---
+import EyeLogo from './eye/EyeLogo.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import { withBase } from '@/lib/url';
+
+const links = [
+  { href: '/research/', label: 'Research' },
+  { href: '/writeups/', label: 'Writeups' },
+  { href: '/about/', label: 'About' },
+];
+
+// Mark the current section (aria-current) — compare without the base path.
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const path = Astro.url.pathname.replace(base, '') || '/';
+const isActive = (href: string) => path.startsWith(href);
+---
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href={withBase('/')}>
+      <EyeLogo size={46} track />
+      <span class="wordmark">dark-argus</span>
+      <span class="visually-hidden">— home</span>
+    </a>
+
+    <nav class="links" aria-label="Primary">
+      <ul role="list">
+        {
+          links.map((l) => (
+            <li>
+              <a href={withBase(l.href)} aria-current={isActive(l.href) ? 'page' : undefined}>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="actions">
+      <!-- Works without JS (/search/ page); JS upgrades it to a dialog. -->
+      <a class="icon-btn acc-cyan" href={withBase('/search/')} data-search-open aria-label="Search (press /)">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6"></path></svg>
+      </a>
+      <ThemeToggle />
+      <a class="btn btn--primary btn--sm btn--pill rss" href={withBase('/rss.xml')}>RSS feed</a>
+
+      <!-- mobile menu: native <details>, no JS -->
+      <details class="menu">
+        <summary class="icon-btn menu-btn" aria-label="Menu">
+          <span class="burger" aria-hidden="true"><i></i><i></i><i></i></span>
+        </summary>
+        <nav class="menu-panel" aria-label="Mobile">
+          <ul role="list">
+            {
+              links.map((l) => (
+                <li>
+                  <a href={withBase(l.href)} aria-current={isActive(l.href) ? 'page' : undefined}>
+                    {l.label}
+                  </a>
+                </li>
+              ))
+            }
+            <li><a href={withBase('/rss.xml')}>RSS feed</a></li>
+          </ul>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-nav);
+    background: var(--bg);
+    border-bottom: var(--border);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    min-height: 4.5rem;
+    padding-inline: var(--gutter);
+    max-width: calc(var(--container) + 2 * var(--gutter));
+    margin-inline: auto;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-decoration: none;
+  }
+  .wordmark {
+    font-family: var(--ff-display);
+    font-size: 1.6875rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .links {
+    margin-left: auto;
+  }
+  .links ul {
+    display: flex;
+    gap: 1.875rem;
+    margin: 0;
+  }
+  .links a,
+  .menu-panel a {
+    font-family: var(--ff-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    text-underline-offset: 0.45em;
+    text-decoration-thickness: 3px;
+  }
+  .links a:hover,
+  .links a[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-color: var(--c-lime);
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .rss {
+    margin-left: var(--space-2);
+  }
+
+  /* ---- mobile menu ---- */
+  .menu {
+    display: none;
+    position: relative;
+  }
+  .menu-btn {
+    list-style: none;
+    cursor: pointer;
+    border-radius: 0;
+  }
+  .menu-btn::-webkit-details-marker {
+    display: none;
+  }
+  .burger {
+    display: grid;
+    gap: 4px;
+  }
+  .burger i {
+    display: block;
+    width: 18px;
+    height: 3px;
+    background: currentColor;
+    transition:
+      rotate var(--dur) var(--ease-out),
+      translate var(--dur) var(--ease-out),
+      opacity var(--dur);
+  }
+  .menu[open] .burger i:nth-child(1) {
+    translate: 0 7px;
+    rotate: 45deg;
+  }
+  .menu[open] .burger i:nth-child(2) {
+    opacity: 0;
+  }
+  .menu[open] .burger i:nth-child(3) {
+    translate: 0 -7px;
+    rotate: -45deg;
+  }
+  .menu-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.9rem);
+    min-width: 14rem;
+    padding: var(--space-2);
+    background: var(--panel);
+    border: var(--border);
+    box-shadow: 6px 6px 0 var(--c-lime);
+  }
+  .menu-panel ul {
+    display: grid;
+    margin: 0;
+  }
+  .menu-panel a {
+    display: block;
+    padding: 0.8rem 0.9rem;
+  }
+  .menu-panel li + li {
+    border-top: var(--bw-thin) dashed var(--line);
+  }
+  .menu-panel a:hover,
+  .menu-panel a[aria-current='page'] {
+    background: var(--c-lime);
+    color: var(--c-ink);
+  }
+
+  @media (max-width: 56rem) {
+    .links,
+    .rss {
+      display: none;
+    }
+    .menu {
+      display: block;
+    }
+    .actions {
+      margin-left: auto;
+    }
+  }
+  @media (max-width: 26rem) {
+    .wordmark {
+      font-size: 1.35rem;
+    }
+    .nav-inner {
+      gap: var(--space-3);
+    }
+    .actions {
+      gap: var(--space-2);
+    }
+  }
+</style>

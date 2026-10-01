@@ -1,0 +1,142 @@
+---
+/** The inverted band: disclosure policy, scope and contact. */
+import { SITE } from '~site';
+import { withBase } from '@/lib/url';
+---
+
+<section class="section invert ethics" id="disclosure" aria-labelledby="ethics-title">
+  <div class="container grid">
+    <div class="intro">
+      <p class="eyebrow">// 04 Trust</p>
+      <h2 id="ethics-title" class="section-title">Disclosure<br />&amp; ethics</h2>
+      <p class="soft">How findings get reported, what is fair game, and how to reach me safely.</p>
+    </div>
+
+    <div class="tiles">
+      <article class="tile">
+        <span class="icon-tile acc-lime" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-4 9-8 11-4-2-8-6-8-11V5Z"></path></svg>
+        </span>
+        <h3>Responsible disclosure</h3>
+        <p>
+          Findings go to the vendor first. Publication follows the fix, or a {SITE.disclosure.embargoDays}-day
+          deadline.
+        </p>
+      </article>
+
+      <article class="tile">
+        <span class="icon-tile acc-orange" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"></path></svg>
+        </span>
+        <h3>Scope &amp; legality</h3>
+        <p>Labs, CTFs and authorized targets only. No third-party data ends up in a post.</p>
+      </article>
+
+      <article class="tile">
+        <span class="icon-tile acc-cyan" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 7l8 6 8-6"></path><rect x="3" y="5" width="18" height="14"></rect></svg>
+        </span>
+        <h3>Contact</h3>
+        <ul role="list" class="contact">
+          <li><a href={`mailto:${SITE.author.email}`}>{SITE.author.email}</a></li>
+          <li>{SITE.author.handle}</li>
+          <li><a href={withBase('/about/#contact')}>More on /about</a></li>
+        </ul>
+      </article>
+
+      <article class="tile">
+        <span class="icon-tile acc-violet" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6Z"></path><path d="M9 12l2 2 4-4"></path></svg>
+        </span>
+        <h3>Report a bug</h3>
+        <p>Found an issue in this site or my tools? Reach out — details in <a href={withBase('/.well-known/security.txt')}>security.txt</a>.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ethics {
+    border-top-color: var(--c-ink);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.4fr);
+    gap: clamp(2.5rem, 1rem + 4vw, 4rem);
+    align-items: start;
+  }
+  .intro {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .intro .eyebrow {
+    color: var(--ink);
+  }
+  .intro p:last-child {
+    font-size: var(--fs-md);
+  }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 14.5rem;
+    padding: 1.4rem;
+    background: var(--panel-2);
+    border: var(--border);
+    box-shadow: var(--shadow);
+  }
+  h3 {
+    font-family: var(--ff-display);
+    font-weight: 400;
+    font-size: 1.625rem;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  .tile p,
+  .contact {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .fpr {
+    padding: 0.6rem 0.75rem;
+    background: var(--c-ink);
+    color: var(--c-lime) !important;
+    font-family: var(--ff-mono);
+    font-size: 0.75rem !important;
+    overflow-wrap: anywhere;
+  }
+  .fpr .k {
+    color: var(--c-bone);
+    margin-right: 0.4em;
+  }
+  .contact {
+    display: grid;
+    gap: 0.2rem;
+    margin: 0;
+    font-family: var(--ff-mono);
+    overflow-wrap: anywhere;
+  }
+  .tile .arrow-link {
+    margin-top: auto;
+    color: var(--ink);
+  }
+  @media (max-width: 60rem) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 36rem) {
+    .tiles {
+      grid-template-columns: 1fr;
+    }
+    .tile {
+      min-height: 0;
+    }
+  }
+</style>

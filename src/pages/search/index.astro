@@ -1,0 +1,27 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import SearchUI from '@/components/SearchUI.astro';
+---
+
+<BaseLayout title="Search" description="Full-text search across research and writeups." noindex>
+  <PageHeader eyebrow="// Search" title="Search" script="a hundred eyes, one query." />
+  <section class="section section--alt" aria-label="Search">
+    <div class="container narrow">
+      <SearchUI id="page" autofocus />
+      <noscript>
+        <p class="note-box">Search runs in your browser and needs JavaScript. Everything is also reachable from the
+        <a href="../research/">research</a>, <a href="../writeups/">writeups</a> and <a href="../tags/">tags</a> pages.</p>
+      </noscript>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section {
+    border-top: 0;
+  }
+  .narrow {
+    max-width: 48rem;
+  }
+</style>
